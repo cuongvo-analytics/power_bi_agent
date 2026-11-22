@@ -43,19 +43,19 @@ table _Measures
 			VAR _d = [Reporting Date]
 			RETURN
 			    CALCULATE ( SUM ( 'Fact Bank Position'[Balance RC] ), REMOVEFILTERS ( 'Dim Date' ), 'Dim Date'[Date] = _d )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 2. Balances
 		lineageTag: 0de35fe5-46d8-43a0-a73a-250c8caa0e78
 
 	/// Retail + wholesale deposit balances at the reporting date (USD, positive, snapshot).
 	measure 'Total Deposits' = CALCULATE ( [Balance], 'Dim Product'[Category] IN { "Retail Deposits", "Wholesale Deposits" } )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 2. Balances
 		lineageTag: a814714d-4501-43cb-9ff3-065c409bbf82
 
 	/// Loan balances at the reporting date (USD, positive, snapshot).
 	measure 'Gross Loans' = CALCULATE ( [Balance], 'Dim Product'[Category] = "Loans" )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 2. Balances
 		lineageTag: 1d15acf4-e733-40da-aebd-9a835ad46647
 
@@ -68,7 +68,7 @@ table _Measures
 			        REMOVEFILTERS ( 'Dim Scenario' ),
 			        'Dim Scenario'[Scenario Key] = _s
 			    )
-		formatString: #,##0,,,.00;(#,##0,,,.00);-
+		formatString: #,##0;(#,##0);-
 		displayFolder: 3. Cash Flows
 		lineageTag: 39d6b439-b7eb-427c-8b43-4b1823bb8ac9
 
@@ -88,7 +88,7 @@ table _Measures
 			        'Dim Date'[Date] = _d,
 			        'Fact HQLA Holding'[Encumbered] = 0
 			    )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 5. Bank Liquidity\HQLA
 		lineageTag: 932e6bcd-7e9c-4049-96de-260721ebf416
 
@@ -102,7 +102,7 @@ table _Measures
 			        'Dim Date'[Date] = _d,
 			        'Fact HQLA Holding'[Encumbered] = 1
 			    )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 5. Bank Liquidity\HQLA
 		lineageTag: e5db54cc-d413-41d3-8c98-aabbc94e2591
 
@@ -115,7 +115,7 @@ table _Measures
 			        REMOVEFILTERS ( 'Dim Date' ),
 			        'Dim Date'[Date] = _d
 			    )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 5. Bank Liquidity\HQLA
 		lineageTag: c2b188c4-273c-4389-aeaa-1fc08784735d
 
@@ -149,26 +149,26 @@ table _Measures
 			                'Fact HQLA Holding'[Encumbered] = 0
 			            )
 			    )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		isHidden
 		displayFolder: 5. Bank Liquidity\HQLA
 		lineageTag: a3259693-e8b3-48ad-b7b9-812adc12d2d2
 
 	/// Level 1 HQLA (central bank reserves, government bonds) after haircuts (incl. scenario add-on), unencumbered, at the reporting date. USD, positive, stressed for non-BASE scenarios.
 	measure 'HQLA L1' = CALCULATE ( [HQLA Post Haircut], KEEPFILTERS ( 'Dim Product'[HQLA Level] = "1" ) )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 5. Bank Liquidity\HQLA
 		lineageTag: 03d9f584-3c63-4f06-9040-c73c869bafd0
 
 	/// Level 2A HQLA after haircuts (incl. scenario add-on), before caps, unencumbered, at the reporting date. USD, positive.
 	measure 'HQLA L2A' = CALCULATE ( [HQLA Post Haircut], KEEPFILTERS ( 'Dim Product'[HQLA Level] = "2A" ) )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 5. Bank Liquidity\HQLA
 		lineageTag: 04c443fd-7e51-4620-a8d0-146f7daba7e4
 
 	/// Level 2B HQLA after haircuts (incl. scenario add-on), before caps, unencumbered, at the reporting date. USD, positive.
 	measure 'HQLA L2B' = CALCULATE ( [HQLA Post Haircut], KEEPFILTERS ( 'Dim Product'[HQLA Level] = "2B" ) )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 5. Bank Liquidity\HQLA
 		lineageTag: ad09002f-509e-4d7f-80fb-dbd70f7b2378
 
@@ -181,7 +181,7 @@ table _Measures
 			VAR _l2Capped = MIN ( _l2a + _l2bCapped, 2 / 3 * _l1 )
 			RETURN
 			    IF ( _l1 + _l2a + _l2b = 0, BLANK (), _l1 + _l2Capped )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 5. Bank Liquidity\HQLA
 		lineageTag: 33df358d-ecf5-4f7f-92f4-bc8b65c090c4
 
@@ -204,7 +204,7 @@ table _Measures
 			        "Caps", - ( _post - [HQLA Stock] ),
 			        "HQLA stock", [HQLA Stock]
 			    )
-		formatString: #,##0,,,.00;(#,##0,,,.00);-
+		formatString: #,##0;(#,##0);-
 		isHidden
 		displayFolder: 5. Bank Liquidity\HQLA
 		lineageTag: 7d070329-7a1a-4223-8b9c-0063f842eb80
@@ -219,7 +219,7 @@ table _Measures
 			        [HQLA Bridge Step Amount]
 			    )
 			)
-		formatString: #,##0,,,.00;(#,##0,,,.00);-
+		formatString: #,##0;(#,##0);-
 		displayFolder: 5. Bank Liquidity\HQLA
 		lineageTag: 097122f1-2d66-400f-9f03-eea984a228eb
 
@@ -252,7 +252,7 @@ table _Measures
 			        RETURN
 			            _base * _factor
 			    )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 5. Bank Liquidity\LCR
 		lineageTag: 29abf3b3-95ea-4a50-a718-52452f997961
 
@@ -281,7 +281,7 @@ table _Measures
 			        RETURN
 			            _base * _factor
 			    )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 5. Bank Liquidity\LCR
 		lineageTag: 7adc4c85-4572-4712-bed1-e55256ebdca1
 
@@ -291,7 +291,7 @@ table _Measures
 			VAR _out = [Outflows 30D]
 			RETURN
 			    IF ( NOT ISBLANK ( _in ), MIN ( _in, 0.75 * _out ) )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 5. Bank Liquidity\LCR
 		lineageTag: 90a70829-d6f8-47bd-a307-8a83015ca6cd
 
@@ -301,7 +301,7 @@ table _Measures
 			VAR _in = [Inflows Capped]
 			RETURN
 			    IF ( NOT ISBLANK ( _out ), _out - _in )
-		formatString: #,##0,,,.00
+		formatString: #,##0
 		displayFolder: 5. Bank Liquidity\LCR
 		lineageTag: bd7bf228-5d7e-46de-aeda-8a87dc101b2d
 
@@ -317,7 +317,7 @@ table _Measures
 			VAR _n = [Net Outflows 30D]
 			RETURN
 			    IF ( NOT ISBLANK ( _h ) || NOT ISBLANK ( _n ), _h - _n )
-		formatString: #,##0,,,.00;(#,##0,,,.00);-
+		formatString: #,##0;(#,##0);-
 		displayFolder: 5. Bank Liquidity\LCR
 		lineageTag: 59e89ec4-51a9-499f-9982-3d39b17d77ce
 
@@ -354,25 +354,25 @@ table _Measures
 			    CALCULATE ( [Outflows 30D], REMOVEFILTERS ( 'Dim Scenario' ), 'Dim Scenario'[Scenario Key] = "BASE" )
 			RETURN
 			    IF ( NOT ISBLANK ( _cur ), _cur - _base )
-		formatString: +#,##0,,,.00;-#,##0,,,.00;0
+		formatString: +#,##0;-#,##0;0
 		displayFolder: 5. Bank Liquidity\LCR
 		lineageTag: 2f7df0b0-186d-4eb2-97e3-4514a3f75f81
 
 	/// Contractual cash inflows from the as-of ladder (positive flows), USD. View: contractual. Sign + in.
 	measure 'Contractual Inflows' = CALCULATE ( SUM ( 'Fact Bank CF Contractual'[Amount RC] ), 'Fact Bank CF Contractual'[Amount RC] > 0 )
-		formatString: #,##0,,,.00;(#,##0,,,.00);-
+		formatString: #,##0;(#,##0);-
 		displayFolder: 5. Bank Liquidity\Maturity & Survival
 		lineageTag: 964061e5-fb4c-4145-b586-c0f900ae4319
 
 	/// Contractual cash outflows from the as-of ladder (negative flows), USD. View: contractual. Sign - out.
 	measure 'Contractual Outflows' = CALCULATE ( SUM ( 'Fact Bank CF Contractual'[Amount RC] ), 'Fact Bank CF Contractual'[Amount RC] < 0 )
-		formatString: #,##0,,,.00;(#,##0,,,.00);-
+		formatString: #,##0;(#,##0);-
 		displayFolder: 5. Bank Liquidity\Maturity & Survival
 		lineageTag: e10f429c-7b6f-45a9-95fb-a4156e52d770
 
 	/// Contractual net cash flow (inflows + outflows), USD. View: contractual (non-maturity deposits in O/N). Sign + in / - out.
 	measure 'Contractual Net CF' = SUM ( 'Fact Bank CF Contractual'[Amount RC] )
-		formatString: #,##0,,,.00;(#,##0,,,.00);-
+		formatString: #,##0;(#,##0);-
 		displayFolder: 5. Bank Liquidity\Maturity & Survival
 		lineageTag: 5dae6982-e67d-4ef0-b11b-097f58aaa67d
 
@@ -384,7 +384,7 @@ table _Measures
 			        NOT ISBLANK ( [Contractual Net CF] ),
 			        CALCULATE ( [Contractual Net CF], REMOVEFILTERS ( 'Dim Time Bucket' ), 'Dim Time Bucket'[Sort Order] <= _o )
 			    )
-		formatString: #,##0,,,.00;(#,##0,,,.00);-
+		formatString: #,##0;(#,##0);-
 		displayFolder: 5. Bank Liquidity\Maturity & Survival
 		lineageTag: 8146044a-92e3-4ed0-b867-99c655fb0fa3
 
@@ -398,7 +398,7 @@ table _Measures
 			        _d > _asof && _d <= _end,
 			        CALCULATE ( [Stressed Net CF], REMOVEFILTERS ( 'Dim Date' ), 'Dim Date'[Date] > _asof, 'Dim Date'[Date] <= _d )
 			    )
-		formatString: #,##0,,,.00;(#,##0,,,.00);-
+		formatString: #,##0;(#,##0);-
 		displayFolder: 5. Bank Liquidity\Maturity & Survival
 		lineageTag: f4b26b73-4993-4aab-be8a-de968d5ab2fc
 
@@ -409,7 +409,7 @@ table _Measures
 			VAR _hq = CALCULATE ( [HQLA Stock], REMOVEFILTERS ( 'Dim Date' ), 'Dim Date'[Date] = _asof )
 			RETURN
 			    IF ( NOT ISBLANK ( _cum ), _hq + _cum )
-		formatString: #,##0,,,.00;(#,##0,,,.00);-
+		formatString: #,##0;(#,##0);-
 		displayFolder: 5. Bank Liquidity\Maturity & Survival
 		lineageTag: 39a45482-6bd3-4db0-a94b-7809b6199ecd
 
