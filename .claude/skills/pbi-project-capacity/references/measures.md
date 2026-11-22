@@ -31,19 +31,19 @@ Standard Weekly Hours = 40
 // Colours: return hex for conditional formatting (Format → field value)
 RAG Color =
 SWITCH ( SELECTEDVALUE ( 'Dim Project'[Health RAG] ),
-    "Green", "#1A7F5A", "Amber", "#D97706", "Red", "#C23B22", "#6B7280" )
+    "Green", "#1E7A00", "Amber", "#D97706", "Red", "#C23B22", "#525355" )
 
 SPI Color =
 VAR _v = [SPI]
-RETURN SWITCH ( TRUE (), ISBLANK ( _v ), "#6B7280", _v >= 0.95, "#1A7F5A", _v >= 0.90, "#D97706", "#C23B22" )
+RETURN SWITCH ( TRUE (), ISBLANK ( _v ), "#525355", _v >= 0.95, "#1E7A00", _v >= 0.90, "#D97706", "#C23B22" )
 
 CPI Color =
 VAR _v = [CPI]
-RETURN SWITCH ( TRUE (), ISBLANK ( _v ), "#6B7280", _v >= 0.95, "#1A7F5A", _v >= 0.90, "#D97706", "#C23B22" )
+RETURN SWITCH ( TRUE (), ISBLANK ( _v ), "#525355", _v >= 0.95, "#1E7A00", _v >= 0.90, "#D97706", "#C23B22" )
 
 Allocation Color =
 VAR _a = [Allocation %]
-RETURN SWITCH ( TRUE (), ISBLANK ( _a ), "#6B7280", _a > 1, "#C23B22", _a < 0.7, "#D97706", "#1A7F5A" )
+RETURN SWITCH ( TRUE (), ISBLANK ( _a ), "#525355", _a > 1, "#C23B22", _a < 0.7, "#D97706", "#1E7A00" )
 ```
 
 ## P1. Schedule (`Fact Task`, summary tasks excluded)

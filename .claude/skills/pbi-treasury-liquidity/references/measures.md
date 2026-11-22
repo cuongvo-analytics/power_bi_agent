@@ -1,4 +1,4 @@
-# Treasury & liquidity measure library (foundation)
+# Treasury & liquidity measure library
 
 This is the foundation layer for treasury and liquidity models. Regulatory and stress metrics (HQLA, LCR, NSFR, maturity gap, CBC, survival, what-if, corporate headroom) are not covered here.
 
@@ -62,6 +62,11 @@ Corp Financing CF      = CALCULATE ( [Corp Actual Net Flow], 'Dim CF Category'[A
 Corp Free Cash Flow    = [Corp Operating CF] + [Corp Investing CF]
 Corp Forecast Net Flow (Generated) = SUM ( 'Fact Corp CF Forecast'[Amount RC] )
 
+// Projected bank flows for the selected scenario (BASE when none selected); + in / - out
+Stressed Net CF =
+VAR _s = [Selected Scenario]
+RETURN CALCULATE ( SUM ( 'Fact Bank CF Stressed'[Amount RC] ), 'Dim Scenario'[Scenario Key] = _s )
+
 // Cumulative projected flow from the as-of date to the date in context (bank, selected scenario, what-if aware)
 Cumulative Projected CF =
 VAR _asof = [As-of Date]
@@ -69,7 +74,7 @@ VAR _d = MAX ( 'Dim Date'[Date] )
 RETURN IF ( _d > _asof, CALCULATE ( [Stressed Net CF], REMOVEFILTERS ( 'Dim Date' ),
                                     'Dim Date'[Date] > _asof, 'Dim Date'[Date] <= _d ) )
 ```
-`[Stressed Net CF]` is defined in liquidity-measures §L4.
+`Cumulative Projected CF` is the base of a liquidity-position or survival curve: add the counterbalancing capacity (HQLA after haircuts) once that measure exists.
 
 ## 4. Variance (folder `4. Variance`), cash sign convention
 Under **+ in / − out**, a higher signed cash amount is always better. There is **no expense inversion**; that was the old P&L logic. For metrics where *lower is better* (outflow amounts shown as positives, gap shortfalls), invert explicitly.
@@ -79,11 +84,12 @@ Stressed CF vs BASE =
 [Stressed Net CF]
     - CALCULATE ( [Stressed Net CF], REMOVEFILTERS ( 'Dim Scenario' ), 'Dim Scenario'[Scenario Key] = "BASE" )
 
+// Needs an [LCR %] measure (not in this library yet)
 LCR vs BASE (pp) =
 [LCR %] - CALCULATE ( [LCR %], REMOVEFILTERS ( 'Dim Scenario' ), 'Dim Scenario'[Scenario Key] = "BASE" )
 
-// Forecast accuracy: needs forecast vintages (see treasury-liquidity-patterns §5).
-// With the single-vintage synthetic data, forecast and actual do not overlap in time.
+// Forecast accuracy: needs forecast vintages (see model-patterns.md §5).
+// With a single forecast vintage, forecast and actual do not overlap in time.
 Forecast Error % =
 VAR _act = [Corp Actual Net Flow]
 VAR _fc = CALCULATE ( [Corp Forecast Net Flow (Generated)], REMOVEFILTERS ( 'Dim Scenario' ), 'Dim Scenario'[Scenario Key] = "BASE" )
@@ -91,12 +97,12 @@ RETURN DIVIDE ( _act - _fc, ABS ( _fc ) )
 
 // Direction helper: +1 good, -1 bad. Pass the variance of a higher-is-better measure.
 Cash Var Favourable = SIGN ( [Stressed CF vs BASE] )
-Var Color = SWITCH ( [Cash Var Favourable], 1, "#1A7F5A", -1, "#C23B22", "#6B7280" )
+Var Color = SWITCH ( [Cash Var Favourable], 1, "#1E7A00", -1, "#C23B22", "#525355" )
 Var Arrow = SWITCH ( [Cash Var Favourable], 1, "▲", -1, "▼", "●" )
 ```
 
 ## 5. Time intelligence: **flow measures only**
-The dataset calendar is January to December (`"12-31"`). Never wrap snapshot or ratio measures (balances, HQLA, LCR %, NSFR %, CBC, survival, headroom) in YTD/MTD. Compare them at two dates instead, e.g. `CALCULATE([LCR %], DATEADD('Dim Date'[Date], -1, YEAR))`.
+The calendar is January to December (`"12-31"`). Never wrap snapshot or ratio measures (balances, HQLA, LCR %, NSFR %, CBC, survival, headroom) in YTD/MTD. Compare them at two dates instead, e.g. `CALCULATE([LCR %], DATEADD('Dim Date'[Date], -1, YEAR))`.
 ```dax
 Corp Net Flow MTD = CALCULATE ( [Corp Actual Net Flow], DATESMTD ( 'Dim Date'[Date] ) )
 Corp Net Flow YTD = CALCULATE ( [Corp Actual Net Flow], DATESYTD ( 'Dim Date'[Date], "12-31" ) )
@@ -178,6 +184,16 @@ VAR _out = CALCULATE ( SUM ( 'Fact Corp CF Forecast'[Amount RC] ), REMOVEFILTERS
                        'Dim Date'[Date] > _asof, 'Dim Date'[Date] <= _asof + 91, 'Fact Corp CF Forecast'[Amount RC] < 0 )
 RETURN DIVIDE ( [Corp Cash As-of] + [Corp Undrawn Available], - _out / 13 )
 
+// Committed facility amount still available on the balance date (snapshot)
+Corp Undrawn Available =
+VAR _d = [Corp Balance Date]
+RETURN CALCULATE ( SUM ( 'Fact Corp Cash Balance'[Undrawn Available RC] ), REMOVEFILTERS ( 'Dim Date' ), 'Dim Date'[Date] = _d )
+
+// Cash + undrawn available - minimum cash (snapshot); < 0 = breach
+Corp Headroom =
+VAR _d = [Corp Balance Date]
+RETURN CALCULATE ( SUM ( 'Fact Corp Cash Balance'[Headroom RC] ), REMOVEFILTERS ( 'Dim Date' ), 'Dim Date'[Date] = _d )
+
 // Working capital from invoices (relate Fact Corp Invoice[Invoice Date] -> Dim Date to trend by month)
 DSO (days) =
 VAR _t = FILTER ( 'Fact Corp Invoice', 'Fact Corp Invoice'[Invoice Type] = "AR" && 'Fact Corp Invoice'[Status] = "PAID" )
@@ -185,7 +201,7 @@ RETURN DIVIDE ( SUMX ( _t, DATEDIFF ( 'Fact Corp Invoice'[Invoice Date], 'Fact C
                            * 'Fact Corp Invoice'[Amount RC At Asof FX] ),
                 SUMX ( _t, 'Fact Corp Invoice'[Amount RC At Asof FX] ) )
 DPO (days) = <same with "AP">
-Cash Conversion Gap (days) = [DSO (days)] - [DPO (days)]          // no inventory in the dataset (DIO = 0)
+Cash Conversion Gap (days) = [DSO (days)] - [DPO (days)]          // add DIO if inventory data exists
 
 Open AR = CALCULATE ( SUM ( 'Fact Corp Invoice'[Amount RC At Asof FX] ), 'Fact Corp Invoice'[Invoice Type] = "AR", 'Fact Corp Invoice'[Status] = "OPEN" )
 Open AP = CALCULATE ( SUM ( 'Fact Corp Invoice'[Amount RC At Asof FX] ), 'Fact Corp Invoice'[Invoice Type] = "AP", 'Fact Corp Invoice'[Status] = "OPEN" )
@@ -195,7 +211,7 @@ RETURN CALCULATE ( [Open AR], 'Fact Corp Invoice'[Due Date] < _asof )
 Overdue AR % = DIVIDE ( [Overdue AR], [Open AR] )
 Key Account AR Share % = DIVIDE ( CALCULATE ( [Open AR], 'Dim Counterparty'[Is Key Account] = 1 ), [Open AR] )
 ```
-AR ageing bucket, as a calculated column on `Fact Corp Invoice` (as-of = 2026-09-30 in the default dataset; read it from `dim_date`):
+AR ageing bucket, as a calculated column on `Fact Corp Invoice` (as-of read from `Dim Date[Period Type]`):
 ```dax
 AR Ageing =
 VAR _asof = CALCULATE ( MAX ( 'Dim Date'[Date] ), ALL ( 'Dim Date' ), 'Dim Date'[Period Type] = "As-of" )
@@ -203,11 +219,10 @@ VAR _dpd = DATEDIFF ( 'Fact Corp Invoice'[Due Date], _asof, DAY )
 RETURN IF ( 'Fact Corp Invoice'[Status] = "PAID", "Paid",
        SWITCH ( TRUE (), _dpd <= 0, "Not due", _dpd <= 30, "1-30", _dpd <= 60, "31-60", "60+" ) )
 ```
-Cash/headroom projections, `Corp Undrawn Available`, `Corp Headroom`, `Corp Days to Breach` and the what-if versions are in liquidity-measures §L6.
+Not in this library yet: `Corp Days to Breach` (first projected day with `Corp Headroom` < 0) and what-if versions of the cash projections.
 
 ## 8. Display helpers (folder `9. Helpers`)
 ```dax
 Title As-of = "As of " & FORMAT ( [As-of Date], "dd MMM yyyy" ) & " · " & [Scenario Label]
-Synthetic Data Label = "Synthetic data, for demonstration"
 Amount Unit Label = MAXX ( FILTER ( 'Dim Currency', 'Dim Currency'[Is Reporting Currency] = 1 ), 'Dim Currency'[Currency Code] ) & " M"
 ```

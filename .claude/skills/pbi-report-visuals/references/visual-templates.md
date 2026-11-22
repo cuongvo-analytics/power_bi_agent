@@ -34,7 +34,7 @@ Shorthand used below:
                 "textRuns": [
                   {
                     "value": "Executive Summary",
-                    "textStyle": { "fontFamily": "Segoe UI Semibold", "fontSize": "18pt", "color": "#1F3A5F" }
+                    "textStyle": { "fontFamily": "\'SC Prosper Sans\', \'Segoe UI Semibold\', wf_segoe-ui_semibold, helvetica, arial, sans-serif", "fontSize": "18pt", "color": "#020B43" }
                   }
                 ]
               }
@@ -112,16 +112,16 @@ To show variance under the card, place a second small card (h ≈ 36) below it, 
   },
   "objects": {
     "dataPoint": [
-      { "properties": { "fill": { "solid": { "color": { "expr": { "Literal": { "Value": "'#1F3A5F'" } } } } } },
+      { "properties": { "fill": { "solid": { "color": { "expr": { "Literal": { "Value": "'#020B43'" } } } } } },
         "selector": { "metadata": "_Measures.Actual" } },
-      { "properties": { "fill": { "solid": { "color": { "expr": { "Literal": { "Value": "'#A8C5DA'" } } } } } },
+      { "properties": { "fill": { "solid": { "color": { "expr": { "Literal": { "Value": "'#9AC7F7'" } } } } } },
         "selector": { "metadata": "_Measures.Budget" } }
     ]
   },
   "drillFilterOtherVisuals": true
 }
 ```
-The `dataPoint` + `selector.metadata` pattern fixes the series colours per measure: Actual navy, Budget pale blue, PY grey `#A0AEC0`, Forecast teal `#2A9D8F`.
+The `dataPoint` + `selector.metadata` pattern fixes the series colours per measure: Actual Prosper Blue `#020B43`, Budget light SC Blue `#9AC7F7`, PY light grey `#A8A9AA`, Forecast SC Blue `#0473EA`.
 
 ## 5. Line trend (Actual vs PY vs Forecast)
 `visualType: "lineChart"`.

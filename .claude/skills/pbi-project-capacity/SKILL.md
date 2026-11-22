@@ -11,7 +11,7 @@ This skill holds the domain knowledge. The generic mechanics (TMDL/PBIR syntax, 
 1. **Identify the domains in scope**: schedule & EVM, agile delivery, capacity & demand, timesheets & utilisation. Each maps to a set of facts in `references/model-patterns.md` §3.
 2. **Map the sources.** For each tool, take the field mapping in `references/model-patterns.md` §5 and the M pattern in `references/source-connectors.md`. Profile exports with `pbi-power-query/scripts/profile_data.py`. For APIs, read one page of the response before writing the full query. Never guess field ids (Jira custom fields differ per site).
 3. **Agree the definitions** from `references/methodology.md` that the report will use: EV method, "done", cycle-time start point, available-hours formula, utilisation denominator. Ask the questions below for anything unknown.
-4. **Fill in `pbi-data-modeling/templates/model-spec.md`**. In §2 Assumptions, replace the treasury rows with the PM rows: standard weekly hours, week start, holiday calendar, EV method, estimation unit, state mapping, utilisation definition. Present the spec and wait for approval.
+4. **Fill in `pbi-data-modeling/templates/model-spec.md`**. In §2 Assumptions, add the PM rows: standard weekly hours, week start, holiday calendar, EV method, estimation unit, state mapping, utilisation definition. Present the spec and wait for approval.
 5. **Write the model and measures** with `references/measures.md` (display folders `P1`–`P9`).
 6. **Build pages** from `references/pages.md`, using the grid and visual templates in `pbi-report-visuals`.
 7. **Validate** with `python .claude/skills/pbip-format/scripts/validate_pbip.py <project root>`.
@@ -26,7 +26,7 @@ This skill holds the domain knowledge. The generic mechanics (TMDL/PBIR syntax, 
 - **Point-in-time attributes:** copy `Team Key` and `Role Key` onto capacity, demand and timesheet rows at load time. People move teams. The fact row keeps the team they were in that week, and `Dim Team` / `Dim Role` filter the facts directly (no snowflake through `Dim Person`).
 - **EVM from sums:** portfolio SPI/CPI is Σ EV ÷ Σ PV and Σ EV ÷ Σ AC, never an average of project ratios. Future weeks have **blank** EV and AC, not 0.
 - **Agile ratios are per team:** velocity and say/do are not comparable across teams. Rolling velocity requires a single team in context.
-- **Colours:** RAG = green `#1A7F5A`, amber `#D97706`, red `#C23B22`, plus grey `#6B7280` for no status. Always show the RAG text too. SPI/CPI ≥ 1 is favourable. Allocation > 100 % is unfavourable and < 70 % is amber (under-used).
+- **Colours:** RAG = green `#1E7A00` (SC Green `#38D200` for fills), amber `#D97706`, red `#C23B22`, plus SC Grey `#525355` for no status. Always show the RAG text too. SPI/CPI ≥ 1 is favourable. Allocation > 100 % is unfavourable and < 70 % is amber (under-used).
 
 ## Questions to ask the user when unknown
 - Standard weekly hours (37.5 / 40), the week start (ISO Monday is the default), public holiday calendar per location, and where leave data comes from.

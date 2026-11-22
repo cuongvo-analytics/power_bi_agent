@@ -88,7 +88,7 @@ Literal values are DAX-style literal strings:
 - text: `"'Revenue'"`
 - number: `"14D"`
 - boolean: `"true"`
-- colour: `{"solid":{"color":{"expr":{"Literal":{"Value":"'#1F3A5F'"}}}}}`
+- colour: `{"solid":{"color":{"expr":{"Literal":{"Value":"'#020B43'"}}}}}`
 ```json
 "visualContainerObjects": {
   "title": [ { "properties": {

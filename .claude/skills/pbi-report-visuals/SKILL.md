@@ -1,6 +1,6 @@
 ---
 name: pbi-report-visuals
-description: Design and create Power BI report pages and visuals (PBIR visual.json) for finance and banking - executive summary, P&L, budget vs actual, balance sheet, loan and deposit portfolio pages - with layout grid, visual selection, IBCS-style variance colouring and the finance theme. Use when the user asks to create visualizations, pages, dashboards or to style the report.
+description: Design and create Power BI report pages and visuals (PBIR visual.json) - layout grid, visual selection, IBCS-style variance and status colouring, copy-ready visual templates, and the SC brand theme (SC palette, SC Prosper Sans font). Includes P&L-style finance pages; treasury and project / capacity page catalogues live in their domain skills. Use when the user asks to create visualizations, pages, dashboards or to style the report.
 ---
 
 # Report pages & visuals (finance & banking)
@@ -20,23 +20,26 @@ description: Design and create Power BI report pages and visuals (PBIR visual.js
    - Create one folder and `visual.json` per visual from `references/visual-templates.md`.
    - Copy `$schema` URLs from existing Desktop-generated files.
 5. **Validate** with `pbip-format/scripts/validate_pbip.py`.
-6. **Hand off the theme:** tell the user to import `assets/finance-theme.json` (View → Themes → Browse for themes) the first time, and to reopen the report.
+6. **Hand off the theme:** tell the user to import `assets/sc-theme.json` (View → Themes → Browse for themes) the first time, and to reopen the report. The brand font **SC Prosper Sans** must be installed on each viewer's machine. Where it isn't, Power BI falls back to Segoe UI (the theme sets a font stack).
 
 ## Design rules
 - **Canvas:** use the size of the existing pages. Desktop's default is 1920 × 1080, so scale the 1280 × 720 grid in `assets/page-layouts.md` by 1.5. Margins are 16 px and gaps 12 px at 1280 width. **Max 8 visuals per page**, including the KPI cards.
 - **Reading order:** top-left most important. KPI row first, then the trend or bridge, then the detail table.
 - Every number needs context: compare it with budget, prior year or a target. A bare total isn't enough.
-- **Variance colours** (from the theme):
-  - favourable = green `#1A7F5A`
+- **Brand palette (base):** Prosper Blue `#020B43` · SC Blue `#0473EA` · SC Green `#38D200` · SC Grey `#525355`. Tints for extra series: `#9AC7F7`, `#4E547B`, `#A8A9AA`, `#9BE87F`, `#CDE3FB`. Light background tint `#EAF3FE`.
+- **Font:** SC Prosper Sans for all text (titles, callouts, labels, tables), with Segoe UI fallback. In PBIR `textStyle` / `fontFamily` use the same stack as the theme: `'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif`.
+- **Status / variance colours** (from the theme):
+  - favourable = dark green `#1E7A00` for text and numbers. SC Green `#38D200` is used only for fills, bars and icons, because it has too little contrast on white for text.
+  - watch / amber = `#D97706`
   - unfavourable = red `#C23B22`
-  - neutral = grey `#6B7280`
+  - neutral = SC Grey `#525355`
 
   Always pair colour with a sign or arrow (▲▼) for colour-blind users. For expense lines, "up" is bad: use the `Var Color` measure, not raw sign colouring.
 - **Scenario styling (IBCS-inspired):**
-  - Actual: solid navy `#1F3A5F`
-  - Prior year: grey `#A0AEC0`
-  - Budget: light outlined / pale blue `#A8C5DA`
-  - Forecast: teal `#2A9D8F`
+  - Actual: solid Prosper Blue `#020B43`
+  - Prior year: light SC Grey `#A8A9AA`
+  - Budget / baseline: light SC Blue `#9AC7F7` (outlined)
+  - Forecast: SC Blue `#0473EA`
 
   Keep the same colour for the same scenario on every page.
 - **Number display:**
@@ -55,7 +58,8 @@ description: Design and create Power BI report pages and visuals (PBIR visual.js
 - **Accessibility:** set `tabOrder` top-left to bottom-right. Text has ≥ 4.5:1 contrast (the theme handles this). No information carried by colour alone.
 
 ## References
-- `references/finance-visual-guide.md`: which visual for which finance or banking question, and recommended pages with their visuals.
+- `references/finance-visual-guide.md`: which visual for which finance or banking question, and recommended P&L-style pages with their visuals.
+- `pbi-treasury-liquidity/references/pages.md`: funding, stress cash-flow, corporate cash and working-capital pages.
 - `references/visual-templates.md`: copy-ready `visual.json` for:
   - textbox title
   - card
@@ -68,6 +72,6 @@ description: Design and create Power BI report pages and visuals (PBIR visual.js
   - bar ranking
   - table
   - slicer
-- `assets/finance-theme.json`: the report theme.
-- `pbi-project-capacity/references/pages.md`: portfolio, schedule, earned value, sprint, flow, capacity vs demand and utilisation pages (same theme, plus RAG amber `#D97706`).
+- `assets/sc-theme.json`: the brand report theme (SC palette, SC Prosper Sans).
+- `pbi-project-capacity/references/pages.md`: portfolio, schedule, earned value, sprint, flow, capacity vs demand and utilisation pages (same theme).
 - `assets/page-layouts.md`: grid coordinates for standard page layouts.

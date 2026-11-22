@@ -5,7 +5,7 @@ Friendly names below follow the convention (snake_case → Title Case, acronyms 
 ## 1. Core concepts to fix before modeling
 | Concept | Rule |
 |---|---|
-| **As-of date** | The month-end the projection starts from. History is ≤ as-of; projections run from as-of + 1. `Dim Date[Days From Asof]` and `[Period Type]` (History / As-of / Projection / Contractual tail) come from the dataset. |
+| **As-of date** | The month-end the projection starts from. History is ≤ as-of; projections run from as-of + 1. `Dim Date[Days From Asof]` and `[Period Type]` (History / As-of / Projection / Beyond horizon) come from the date table. |
 | **Three cash-flow views** | **Contractual** (what contracts say; `Fact Bank CF Contractual`), **behavioural** (BASE scenario) and **stressed** (other scenarios; `Fact Bank CF Stressed`). Never mix views in one measure without labelling. |
 | **Sign convention** | Cash flows: **+ received, − paid** (bank and corporate). Balances are **positive**; the `Side Sign` on `Dim Product` (+1 asset / −1 liability, equity, off-balance) gives direction. There is no debit/credit `Report Sign`. |
 | **Snapshot vs flow** | Snapshot tables (positions, HQLA, cash balance) are semi-additive: pick one date (`[Reporting Date]`), never sum over time. Flow tables are additive over time. |
@@ -15,7 +15,7 @@ Friendly names below follow the convention (snake_case → Title Case, acronyms 
 ## 2. Conformed dimensions
 | Dimension | Key | Used by | Notes |
 |---|---|---|---|
-| Dim Date | Date | all facts | Shipped in the dataset (history start → last contractual flow, ~26 years). Mark as the date table. Don't build a new one from a fact. |
+| Dim Date | Date | all facts | Use the source calendar if shipped; otherwise `pbi-data-modeling/templates/date-table.tmdl`. Must span history start → last contractual flow. Mark as the date table. |
 | Dim Scenario | Scenario Key | stressed flows, survival, corporate forecast and balance, scenario parameter, reference metrics | Single-select slicer on KPI pages |
 | Dim Currency | Currency Code | all facts | `Rate To RC Asof`, `Is Reporting Currency` = spot used for projections |
 | Dim Entity | Entity Code | corporate facts, facilities, reference metrics | Bank, corporate group and subsidiaries (`Parent Entity Code`) |
@@ -42,7 +42,7 @@ Dim Date ─┬─ Fact Bank Position ─────┐
 | Fact Bank Survival | scenario × currency scope × day | derived | Ready-made liquidity position curve (no what-if) |
 | Dim Contract | contract | dimension | Start/maturity, rate, notional, encumbered, segment. Use for drill-through and concentration. **Do not** relate it to Dim Product (ambiguous path). |
 
-**Attributes a real bank source must provide to support LCR/NSFR.** Map them when replacing the synthetic data:
+**Attributes a real bank source must provide to support LCR/NSFR.** Map them from the source:
 
 | Attribute | Why |
 |---|---|
@@ -76,9 +76,9 @@ Dim Facility ── Dim Entity        Fact Corp Invoice ── Dim Counterparty
 Treasury re-forecasts weekly. To measure forecast accuracy, keep each forecast run instead of overwriting it:
 - Add `Forecast Asof Date` to the forecast fact. The PK becomes scenario × forecast as-of × date × entity × category.
 - Add a small `Dim Forecast Vintage` (date list), single-select. Default to the latest vintage.
-- Accuracy = actual vs forecast for the same target date, made N weeks earlier. See `Forecast Error %` in `treasury-liquidity-measures.md`.
+- Accuracy = actual vs forecast for the same target date, made N weeks earlier. See `Forecast Error %` in `measures.md`.
 
-The synthetic dataset has one vintage (the as-of date). Add this pattern when real weekly forecasts arrive.
+Add this pattern when weekly forecasts are kept.
 
 ## 6. FX rules
 | Amount | Rate |
@@ -88,7 +88,7 @@ The synthetic dataset has one vintage (the as-of date). Add this pattern when re
 | Projections (contractual, stressed, forecast) | **As-of spot** (or forward rates if available) × (1 + scenario `fx_shock`) |
 | Ratios across currencies (LCR, NSFR) | Compute in the reporting currency and per significant currency. FX shocks hit both HQLA and outflows. |
 
-Convert in the source or in Power Query. The dataset already provides `… RC` columns, so there's no runtime FX lookup in DAX except for what-if FX shocks.
+Convert in the source or in Power Query. Load `… RC` columns so there's no runtime FX lookup in DAX, except for what-if FX shocks.
 
 ## 7. KPI → required tables
 | KPI | Tables | Measures in |
@@ -97,9 +97,9 @@ Convert in the source or in Power Query. The dataset already provides `… RC` c
 | NSFR | Bank Position, Dim Product | not yet in library |
 | Maturity gap (contractual / behavioural) | Bank CF Contractual, Bank CF Stressed, Dim Time Bucket | not yet in library |
 | CBC, survival horizon | HQLA Holding, Bank CF Stressed | not yet in library |
-| Loan-to-deposit, CASA / stable funding, wholesale reliance, concentration | Bank Position, Dim Product, Dim Contract | `pbi-dax-measures/references/treasury-liquidity-measures.md` |
-| NII, NIM | Bank CF History (interest flow types), Bank Position | treasury-liquidity-measures |
-| Corporate cash, headroom, days to breach, weeks of cover | Corp Cash Balance, Corp CF Forecast, Dim Facility | treasury-liquidity-measures + liquidity-measures §L6 |
-| Net debt, facility utilisation, covenant (minimum cash) headroom | Dim Facility, Corp Cash Balance | treasury-liquidity-measures |
-| DSO, DPO, cash conversion, overdue AR | Corp Invoice | treasury-liquidity-measures |
-| Forecast accuracy | Corp CF Forecast (with vintage) + Corp CF Actual | treasury-liquidity-measures |
+| Loan-to-deposit, CASA / stable funding, wholesale reliance, concentration | Bank Position, Dim Product, Dim Contract | `measures.md` |
+| NII, NIM | Bank CF History (interest flow types), Bank Position | `measures.md` |
+| Corporate cash, headroom, days to breach, weeks of cover | Corp Cash Balance, Corp CF Forecast, Dim Facility | `measures.md` (days to breach not yet) |
+| Net debt, facility utilisation, covenant (minimum cash) headroom | Dim Facility, Corp Cash Balance | `measures.md` |
+| DSO, DPO, cash conversion, overdue AR | Corp Invoice | `measures.md` |
+| Forecast accuracy | Corp CF Forecast (with vintage) + Corp CF Actual | `measures.md` |

@@ -2,16 +2,16 @@
 
 Use the 1280 × 720 grid and coordinates in `pbi-report-visuals/assets/page-layouts.md` (× 1.5 for 1920 × 1080) and the `visual.json` templates in `pbi-report-visuals/references/visual-templates.md`. Max 8 visuals per page. Measures are from `measures.md`.
 
-## Colour rules (finance theme + amber)
+## Colour rules (brand theme `sc-theme.json`)
 | Meaning | Colour |
 |---|---|
-| Favourable / Green RAG / SPI, CPI ≥ 0.95 / allocation 70–100 % | `#1A7F5A` |
+| Favourable / Green RAG / SPI, CPI ≥ 0.95 / allocation 70–100 % | `#1E7A00` text, SC Green `#38D200` fills |
 | Watch / Amber RAG / SPI, CPI 0.90–0.95 / allocation < 70 % | `#D97706` |
 | Unfavourable / Red RAG / SPI, CPI < 0.90 / allocation > 100 % | `#C23B22` |
-| No status / neutral | `#6B7280` |
-| Plan, baseline, PV, capacity line | navy `#1F3A5F` |
-| Actual, EV, completed | teal `#2A9D8F` |
-| Cost (AC), demand, scope | light blue `#A8C5DA` or gold `#C9A227` |
+| No status / neutral | SC Grey `#525355` |
+| Plan, baseline, PV, capacity line | Prosper Blue `#020B43` |
+| Actual, EV, completed | SC Blue `#0473EA` |
+| Cost (AC), demand, scope | light SC Blue `#9AC7F7` or SC Grey `#525355` |
 
 Apply colours with field-value conditional formatting bound to the `… Color` helper measures. Always show the value or RAG text as well.
 
@@ -37,7 +37,7 @@ A Gantt chart needs a custom visual (not in the PBIR templates). Offer it as a m
 ## 3. Earned value: "Will we finish on budget?"
 Executive layout, one project selected (or the portfolio).
 - KPI: `BAC` · `EAC` · `VAC` · `TCPI`.
-- Main chart (line, continuous `Week Start` axis): `PV Cumulative` (navy), `EV Cumulative` (teal), `AC Cumulative` (gold). This is the S-curve. EV and AC stop at the EVM status date.
+- Main chart (line, continuous `Week Start` axis): `PV Cumulative` (Prosper Blue), `EV Cumulative` (SC Blue), `AC Cumulative` (SC Grey). This is the S-curve. EV and AC stop at the EVM status date.
 - Side chart (line): `SPI` and `CPI` by week, with a constant line at 1.0.
 - Detail: matrix by project (rows) with PV, EV, AC, SV, CV, SPI, CPI, EAC, VAC. Negatives in brackets, and SV/CV coloured by sign.
 

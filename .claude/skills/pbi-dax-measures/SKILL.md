@@ -1,57 +1,55 @@
 ---
 name: pbi-dax-measures
-description: Write, organise and document DAX measures for treasury and liquidity reporting (bank ALM + corporate treasury) on the liquidity dataset - as-of / reporting-date snapshot patterns, cash-flow measures with the + in / - out sign convention, stress-vs-base variance, flow-only time intelligence, funding KPIs (LTD, CASA, wholesale reliance, concentration, NII/NIM), corporate treasury KPIs (cash, net debt, facility utilisation, weeks of cover, DSO/DPO, overdue AR, forecast accuracy) and guarded calculation groups. Use whenever adding or fixing measures in the semantic model.
+description: Write, organise and document DAX measures in a Power BI semantic model - base and derived measure layers, numbered display folders, descriptions and format strings, DIVIDE and VAR/RETURN style, semi-additive snapshot patterns, role-playing dates with USERELATIONSHIP, time intelligence on flow measures only, conditional-formatting colour helpers and guarded calculation groups. Domain measure libraries live in pbi-treasury-liquidity and pbi-project-capacity. Use whenever adding or fixing measures in the semantic model.
 ---
 
-# DAX measures (treasury & liquidity)
+# DAX measures
+
+This skill covers the generic method. The measure libraries are in the domain skills:
+
+| Domain | Library | Display folders |
+|---|---|---|
+| Treasury & liquidity | `pbi-treasury-liquidity/references/measures.md` | `1. Dates & Scenario` … `6. Corporate Treasury`, `9. Helpers` |
+| Project management & capacity | `pbi-project-capacity/references/measures.md` | `P1. Schedule` … `P6. Utilisation`, `P9. Helpers` |
 
 ## Workflow
 1. Read the model first: tables, columns, relationships and existing measures. Reuse base measures; never define a measure twice.
 2. Build in layers:
-   - **Foundation**: dates & scenario, snapshot balances, cash flows (`references/treasury-liquidity-measures.md`)
-   - **Comparisons**: vs BASE, time intelligence on flows, as measures or as guarded calc groups (`references/calc-groups.md`)
-3. Propose the list (folder · name · plain-English definition · sign · format) and get approval.
+   - **Base**: simple aggregations of fact columns (`SUM`, `COUNTROWS`), plus snapshot measures that pick one date.
+   - **Derived**: ratios, variances and KPIs built only from base measures.
+   - **Comparisons**: vs baseline / scenario / prior period, as measures or as guarded calc groups (`references/calc-groups.md`).
+   - **Helpers**: status dates, labels, colours (hidden folder).
+3. Propose the list (folder · name · plain-English definition · sign/unit · format) and get approval.
 4. Write the measures into `tables/_Measures.tmdl` (see `pbip-format/references/tmdl-syntax.md`).
-5. Validate with `pbip-format/scripts/validate_pbip.py`.
+5. Validate with `pbip-format/scripts/validate_pbip.py`, and reconcile against source reference values where they exist.
 
 ## Rules
-- **Display folders** in `_Measures`:
-  - `1. Dates & Scenario`
-  - `2. Balances`
-  - `3. Cash Flows`
-  - `4. Variance`
-  - `5. Bank Liquidity`
-  - `6. Corporate Treasury`
-  - `9. Helpers` (hidden)
-  - project & capacity measures use `P1. Schedule` … `P9. Helpers` (see `pbi-project-capacity/references/measures.md`)
-- **Documentation:** every measure has a `///` description stating the definition, the **sign** (+ in / − out, or "positive balance"), and the view (contractual, behavioural or stressed).
-- **Sign convention:** cash flows are + received / − paid; balances are positive. A higher signed cash amount is better. **Don't** invert variance by account type, which is P&L logic and doesn't apply here. Invert only for measures shown as positive outflows, such as `Stressed 30D Net Outflow`.
-- **Snapshots:** bank balances use `[Reporting Date]` and corporate cash uses `[Corp Balance Date]`, both with `REMOVEFILTERS('Dim Date')`. **Never** use `LASTDATE('Dim Date'[Date])`: the calendar runs to the 2050s contractual tail, so unfiltered cards go blank. Never `SUM` balances across dates.
-- **Scenario:**
-  - `Dim Scenario` holds stress scenarios: ACT, BASE, IDIO, MARKET, COMBINED, REVERSE.
-  - Read it via `[Selected Scenario]`, which defaults to BASE.
-  - Compare scenarios with `REMOVEFILTERS('Dim Scenario')` + a key filter.
-  - Budgets and planning versions need a separate `Dim Version`.
-- **Time intelligence on flow measures only**, with the calendar year-end `"12-31"`. For snapshots and ratios, compare two dates (`DATEADD` / `SAMEPERIODLASTYEAR` moves `[Reporting Date]`). Don't use YTD.
+- **All measures** live in `_Measures`, in the domain's numbered display folders. A new domain gets its own prefix so folders don't collide.
+- **Documentation:** every measure has a `///` description stating the definition, the unit, and the sign or direction (what "good" looks like). Domain skills add what else the description must state.
+- **Snapshots (semi-additive):** evaluate on one date (a `[Reporting Date]` / `[Status Date]` helper) with `REMOVEFILTERS('Dim Date')` + a date filter. Don't use `LASTDATE('Dim Date'[Date])` when the calendar extends into the future. Never `SUM` a snapshot across dates.
+- **Role-playing dates:** use `CALCULATE ( …, USERELATIONSHIP ( Fact[Other Date], 'Dim Date'[Date] ) )`.
+- **Time intelligence on flow measures only.** For snapshots and ratios, compare two dates or recompute the ratio from period-shifted parts.
+- **Ratios across groups** are computed from sums (Σ numerator ÷ Σ denominator), never as averages of row-level ratios.
 - **Format strings:**
 
   | Measure kind | Format string |
   |---|---|
   | Amounts | `#,##0` |
-  | Signed cash flows and variances | `#,##0;(#,##0);-` |
-  | Ratios | `0.0%` |
+  | Signed amounts and variances | `#,##0;(#,##0);-` |
+  | Ratios / percentages | `0.0%` |
   | Ratio deltas | `+0.0%;-0.0%;0.0%` (state "pp" in the title) |
-  | Days | `0` |
+  | Indices (SPI, CPI) | `0.00` |
+  | Hours, counts | `#,0` |
+  | Days | `0` or `0.0` |
   | Millions | `#,##0.0,,"M"` |
 
 - **DAX style:**
   - Use `VAR` / `RETURN` and `DIVIDE`.
-  - Use column predicates in `CALCULATE`, not `FILTER(table)`.
-  - Precompute in Power Query or the generator where possible.
-- **Annualise** NIM, ROA/ROE and cost of risk using `[Annualisation Factor]`.
-- **Blank, not 0,** when there's no data. Exception: survival "beyond horizon" is shown as a label (`Survival Label`).
+  - Use column predicates in `CALCULATE`, not `FILTER(table)`, unless the condition compares two columns.
+  - Precompute row-level logic in Power Query or the source where possible.
+- **Blank, not 0,** when there's no data, so visuals don't plot false zeros.
+- **Colour helpers** return hex codes for field-value conditional formatting, using the status colours in `pbi-report-visuals` (favourable `#1E7A00`, watch `#D97706`, unfavourable `#C23B22`, neutral `#525355`). Always pair colour with a sign, arrow or label.
 
 ## References
-- `references/treasury-liquidity-measures.md`: the foundation library (dates, balances, flows, variance, flow TI, bank funding KPIs, corporate treasury KPIs, helpers).
-- `references/calc-groups.md`: Time Intelligence (flows only, guarded), Stress Comparison (vs BASE), Currency View.
-- `pbi-project-capacity/references/measures.md`: schedule, earned value, agile, flow, capacity & demand and utilisation measures.
+- `references/calc-groups.md`: when to use calculation groups, the guard rule, the Time Intelligence template and precedence.
+- Domain libraries: see the table above.

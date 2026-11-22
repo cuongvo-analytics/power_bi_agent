@@ -1,77 +1,70 @@
 # Model spec: <Report name>
 
-_Status: DRAFT, awaiting approval · Date: <yyyy-mm-dd>_
+_Status: DRAFT, awaiting approval · Date: <yyyy-mm-dd> · Domain: <treasury & liquidity / project & capacity / …>_
 
 ## 1. Purpose & audience
-- Business questions this report answers (3–6 bullets), e.g. *Can the bank meet 30-day stressed outflows?*, *How many days do we survive under COMBINED stress?*, *Does the corporate group keep headroom above minimum cash over 13 weeks?*
-- Primary users (ALCO, Treasury, Risk, CFO):
+- Business questions this report answers (3–6 bullets), e.g. *Can we meet 30-day stressed outflows?*, *Which projects are late or over budget?*, *Do we have enough people for the next 12 weeks?*
+- Primary users (ALCO, Treasury, PMO, delivery leads, resource managers, CFO):
 - Refresh frequency / as-of cadence:
 
 ## 2. Assumptions (confirm or correct)
+Start with the general rows, then paste the domain's assumption rows from its `SKILL.md` (`pbi-treasury-liquidity`, `pbi-project-capacity`).
+
 | Topic | Assumption |
 |---|---|
-| As-of date & horizon | <2026-09-30>; daily projection 365 days; contractual tail to final maturity |
-| Data | <source: CSV/Excel files in data/ / SQL database> |
-| Sign convention | Cash flows + received / − paid; balances positive (`Side Sign` gives direction) |
-| Cash-flow views | Contractual (`Fact Bank CF Contractual`), behavioural = BASE, stressed = other scenarios (`Fact Bank CF Stressed`) |
-| Scenarios | ACT, BASE, IDIO, MARKET, COMBINED, REVERSE (stress only; no budget versions) |
-| Regulatory basis | Basel III LCR (BCBS 238) / NSFR (BCBS 295); national discretion: <none / SBV …> |
-| Non-maturity deposits | Contractual: O/N. Behavioural: run-off curve per scenario. |
-| Currency | Reporting currency <EUR / USD> (`… RC` columns); projections at as-of spot × scenario FX shock; per-currency LCR for significant currencies <EUR, USD, GBP> |
-| Corporate | Minimum cash per entity; committed facilities only count as headroom |
+| Data sources | <CSV/Excel files in data/ · SQL database · Jira / Azure DevOps / Project Server API> |
+| As-of / status date | <yyyy-mm-dd, or end of selected period capped at today> |
+| Calendar | Fiscal year starts <month>; weeks start on Monday (ISO); time zone <…> |
+| Currency / unit | <reporting currency · hours · story points> |
+| <domain rows> | <…> |
 
 ## 3. Sources
 | Source | Type | Rows | Used for |
 |---|---|---|---|
 | data/<file>.csv | CSV | <rows> | Fact <Subject> |
+| <API / OData entity> | REST / OData | <rows> | Fact <Subject> |
 
 ## 4. Tables
 | Table | Kind | Grain (one row per …) | Key | Source / transform |
 |---|---|---|---|---|
-| Fact Bank Position | Snapshot | contract × month-end | Date + Contract Id | fact_bank_position.csv |
-| Fact HQLA Holding | Snapshot | security × month-end | Date + Contract Id | fact_hqla_holding.csv |
-| Fact Bank CF Stressed | Flow (projection) | scenario × day × product × currency × flow type | composite | fact_bank_cashflow_stressed.csv |
-| Fact Corp Cash Balance | Snapshot (daily) | scenario × day × account | composite | fact_corp_cash_balance.csv |
-| Dim Product | Dimension | product | Product Code | dim_product.csv (LCR/NSFR parameters) |
-| Dim Scenario | Dimension | scenario | Scenario Key | dim_scenario.csv |
-| Dim Date | Dimension | day | Date | dim_date.csv (marked date table) |
+| Fact <Subject> | Snapshot / Flow / Accumulating | <grain> | <key> | <source, main transforms> |
+| Dim <Entity> | Dimension | <entity> | <Entity Key> | <source> (+ Unknown row) |
+| Dim Date | Dimension | day | Date | <source calendar / templates/date-table.tmdl> (marked date table) |
 | _Measures | Measure table | — | — | — |
 
 ### Columns (visible columns only; hidden keys and technical columns are implied)
-**Dim Product**: Product Name, Side, Category, Product Class, HQLA Level (parameters hidden)
+**Dim <Entity>**: <Column>, <Column>, …
 
 ## 5. Relationships
 | From (many) | To (one) | Active | Direction | Note |
 |---|---|---|---|---|
-| Fact Bank Position[Date] | Dim Date[Date] | ✔ | Single | snapshot: measures pick `[Reporting Date]` |
-| Fact Bank CF Stressed[Scenario Key] | Dim Scenario[Scenario Key] | ✔ | Single | |
+| Fact <Subject>[<Date>] | Dim Date[Date] | ✔ | Single | |
+| Fact <Subject>[<Other Date>] | Dim Date[Date] | ✖ | Single | role-playing, used with `USERELATIONSHIP` |
 
 ## 6. Hierarchies
-- Dim Product › Product Hierarchy: Side → Category → Product Name
 - Dim Date › Calendar: Year → Quarter → Year Month → Date
+- <Dim> › <Hierarchy>: <Level> → <Level>
 
 ## 7. Measures
-| Folder | Measure | Definition (plain English) | Sign / view | Format |
+| Folder | Measure | Definition (plain English) | Sign / unit / view | Format |
 |---|---|---|---|---|
-| 1. Dates & Scenario | Reporting Date | Last month-end snapshot ≤ selected date | n/a | Short Date |
-| L2. HQLA & LCR | LCR % | HQLA stock after haircuts & caps / net 30-day outflows | ratio; regulatory for ACT/BASE, internal for stress | 0.0% |
-| L5. Survival | Survival Days | First projection day with CBC + cumulative stressed flow < 0 | days; stressed | 0 |
+| <1. / P1.> <Folder> | <Measure> | <definition> | <+ good / hours / snapshot> | <format> |
 
 ## 8. Report pages
 | Page | Question it answers | Visuals |
 |---|---|---|
-| Liquidity Overview | Can we meet our obligations? | 4 KPI cards (LCR, NSFR, Survival, CBC), LCR/NSFR trend, LCR by scenario, survival table |
+| <Page> | <question> | <KPI cards, trend, breakdown, detail> |
 
 ```
-┌──────── Title · as of <date> · Synthetic data ── Scenario ▾ Currency ▾ ─┐
-│ LCR %   │ NSFR %   │ Survival days │ CBC                                │
-│ LCR & NSFR trend (100% line)          │ LCR by scenario                 │
-│ Survival by scenario (table)                                            │
+┌──────── Title · as of <date> ─────────────────── Slicer ▾ Slicer ▾ ─────┐
+│ KPI 1   │ KPI 2    │ KPI 3         │ KPI 4                              │
+│ Main chart (trend)                    │ Side chart (breakdown)          │
+│ Detail table / matrix                                                   │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## 9. Reconciliation
-DAX vs <source reference values / regulatory return> for <key metrics> per scenario; tolerance < 0.1%.
+DAX vs <source reference values / regulatory return / tool's own report> for <key metrics>; tolerance < 0.1%.
 
 ## 10. Open questions
 1. …
@@ -79,5 +72,5 @@ DAX vs <source reference values / regulatory return> for <key metrics> per scena
 ## 11. Files to be written
 - `definition/tables/*.tmdl` (list)
 - `definition/relationships.tmdl`, `definition/model.tmdl` (`ref table` lines)
-- `definition/expressions.tmdl` (`DataFolder` parameter)
+- `definition/expressions.tmdl` (parameters: `DataFolder`, `SqlServer`, API base URLs)
 - `*.Report/definition/pages/...`
