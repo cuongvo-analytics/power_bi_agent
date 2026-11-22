@@ -28,6 +28,7 @@ Profile the data → propose a spec (`docs/model-spec.md`) → **user approves**
 - **Tables:** `Fact <Subject>`, `Dim <Entity>`. Measures live in `_Measures`, in numbered display folders.
 - **Columns** use business names with spaces. Keys end in `Key` and are hidden.
 - **Measures:** every one has a description and a format string. Use `DIVIDE` and `VAR`/`RETURN`. Balances are semi-additive.
+- **Let Power BI scale numbers:** amount format strings stay plain (`#,##0`). Never scale in the format string (`#,##0,,.0`, `"M"`, `"bn"`): cards and charts use Auto display units and would divide again, showing 0. Cards and charts show "5.48bn" on their own. Title tables and matrices "(USD)" and cards and charts "(USD bn)".
 - **Brand:** SC palette Prosper Blue `#020B43`, SC Blue `#0473EA`, SC Green `#38D200`, SC Grey `#525355`; font **SC Prosper Sans** (Segoe UI fallback). Theme: `.claude/skills/pbi-report-visuals/assets/sc-theme.json`.
 - **Status / variance colours:** favourable `#1E7A00` text (SC Green `#38D200` for fills), watch / amber `#D97706`, unfavourable `#C23B22`, neutral `#525355`. Expense increases count as unfavourable.
 - **Data files** go in `data/` (CSV/Excel). SQL connection details go in the `SqlServer` / `SqlDatabase` parameters.

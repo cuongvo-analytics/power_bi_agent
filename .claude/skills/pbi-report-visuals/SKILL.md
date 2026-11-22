@@ -43,7 +43,8 @@ description: Design and create Power BI report pages and visuals (PBIR visual.js
 
   Keep the same colour for the same scenario on every page.
 - **Number display:**
-  - Thousands or millions consistently per page, with the unit in the title, e.g. "Revenue (USD M)".
+  - **Let Power BI scale large numbers.** Measures keep plain format strings (`#,##0`); cards, axes and data labels use their Auto display units ("5.48bn"). Don't scale in the format string, and don't set display units on top of a scaled format: the value is divided twice and shows as 0. Set a visual's display units (e.g. Millions) only when a page needs one consistent unit.
+  - Put the unit in the title: "(USD bn)" on cards and charts that auto-scale, "(USD)" on tables and matrices, which show full numbers.
   - Negatives in brackets for variances.
   - Percentages to 1 decimal.
 - **Chart choice:**
