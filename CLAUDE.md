@@ -36,4 +36,7 @@ Profile the data → propose a spec (`docs/model-spec.md`) → **user approves**
 ```
 python .claude/skills/pbi-power-query/scripts/profile_data.py data/ --out docs/data-profile.md
 python .claude/skills/pbip-format/scripts/validate_pbip.py .
+# synthetic demo data (CSVs are git-ignored; see the README in each folder for tables and expected results)
+python scripts/generate_liquidity_sample.py --seed 42 --out data/liquidity_sample          # → power_bi_report/liquidity_report
+python scripts/generate_capacity_sample.py --seed 42 --out data/capacity_planning_sample   # → power_bi_report/capacity_planning
 ```
