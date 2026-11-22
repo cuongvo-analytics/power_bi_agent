@@ -1,0 +1,92 @@
+/// Products with Basel III LCR parameters (LCR Group, Basis, Flow, Rate, HQLA Level, Base Haircut). Measures read rates from here.
+table 'Dim Product'
+	lineageTag: 30d0e167-54a4-42c8-8ff4-c489f39904fb
+
+	column 'Product Code'
+		dataType: string
+		isHidden
+		lineageTag: 4d6eee7d-ab64-4ec8-8958-fc28a312fa93
+		summarizeBy: none
+		sourceColumn: Product Code
+
+	column 'Product Name'
+		dataType: string
+		lineageTag: 6804855d-553e-42ae-9b94-2ff380c27a5d
+		summarizeBy: none
+		sourceColumn: Product Name
+
+	column Side
+		dataType: string
+		lineageTag: aa621ee6-dd75-4cb1-ad9a-867728cb9f6e
+		summarizeBy: none
+		sourceColumn: Side
+
+	column Category
+		dataType: string
+		lineageTag: 78f0f3e9-74de-409f-b33e-6fb9a8a8940f
+		summarizeBy: none
+		sourceColumn: Category
+
+	column 'Product Class'
+		dataType: string
+		lineageTag: d2d3dc60-ab88-49f1-bf3b-01893a1f7d8a
+		summarizeBy: none
+		sourceColumn: Product Class
+
+	column 'Segment Code'
+		dataType: string
+		isHidden
+		lineageTag: da7495c0-33a3-4409-8cb5-d005345a28a6
+		summarizeBy: none
+		sourceColumn: Segment Code
+
+	column 'LCR Group'
+		dataType: string
+		lineageTag: c11b07a2-4fd7-4141-8ba8-bcfb1e4b473a
+		summarizeBy: none
+		sourceColumn: LCR Group
+
+	column 'LCR Basis'
+		dataType: string
+		lineageTag: fcc82cef-13f7-4778-9eb8-9075f3a520a6
+		summarizeBy: none
+		sourceColumn: LCR Basis
+
+	column 'LCR Flow'
+		dataType: string
+		lineageTag: 4eaaa4cd-1e62-4af2-a540-468f25158f47
+		summarizeBy: none
+		sourceColumn: LCR Flow
+
+	column 'LCR Rate'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 0a4957bf-3b9a-46c6-a87e-d4221d39b2fb
+		summarizeBy: none
+		sourceColumn: LCR Rate
+
+	column 'HQLA Level'
+		dataType: string
+		lineageTag: 7b5268c6-0341-4f66-9a28-310d647e35ce
+		summarizeBy: none
+		sourceColumn: HQLA Level
+
+	column 'Base Haircut'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 71e6d7c6-38a6-4e3f-8b67-56c2e7811dd1
+		summarizeBy: none
+		sourceColumn: Base Haircut
+
+	partition 'Dim Product' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_product.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted, {"product_code", "product_name", "side", "category", "product_class", "segment_code", "lcr_group", "lcr_basis", "lcr_flow", "lcr_rate", "hqla_level", "base_haircut"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"product_code", type text}, {"product_name", type text}, {"side", type text}, {"category", type text}, {"product_class", type text}, {"segment_code", type text}, {"lcr_group", type text}, {"lcr_basis", type text}, {"lcr_flow", type text}, {"lcr_rate", type number}, {"hqla_level", type text}, {"base_haircut", type number}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"product_code", "Product Code"}, {"product_name", "Product Name"}, {"side", "Side"}, {"category", "Category"}, {"product_class", "Product Class"}, {"segment_code", "Segment Code"}, {"lcr_group", "LCR Group"}, {"lcr_basis", "LCR Basis"}, {"lcr_flow", "LCR Flow"}, {"lcr_rate", "LCR Rate"}, {"hqla_level", "HQLA Level"}, {"base_haircut", "Base Haircut"}})
+				in
+				    Renamed
+

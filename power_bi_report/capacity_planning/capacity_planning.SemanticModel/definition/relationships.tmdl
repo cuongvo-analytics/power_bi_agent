@@ -1,0 +1,65 @@
+relationship 494d4d28-ec85-4563-8469-c044cc0a2fd5
+	fromColumn: 'Fact Capacity'.'Person Key'
+	toColumn: 'Dim Person'.'Person Key'
+
+relationship 5b0e6d16-345e-4e65-8abd-6bcd3b82d9ae
+	fromColumn: 'Fact Capacity'.'Team Key'
+	toColumn: 'Dim Team'.'Team Key'
+
+relationship 267058b3-6b15-4038-ae31-f721578acf91
+	fromColumn: 'Fact Capacity'.'Role Key'
+	toColumn: 'Dim Role'.'Role Key'
+
+relationship b8b0754f-3042-4394-92c7-a0d57a287a5a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Capacity'.'Week Start'
+	toColumn: 'Dim Date'.Date
+
+relationship 808763a6-ae8a-4997-a177-63f7d1f4a779
+	fromColumn: 'Fact Demand'.'Project Key'
+	toColumn: 'Dim Project'.'Project Key'
+
+relationship 0ee67eb3-cf92-44c6-977a-59033de2353f
+	fromColumn: 'Fact Demand'.'Person Key'
+	toColumn: 'Dim Person'.'Person Key'
+
+relationship 22a4c857-4a8f-4426-b9e0-881c46d7fcf9
+	fromColumn: 'Fact Demand'.'Role Key'
+	toColumn: 'Dim Role'.'Role Key'
+
+relationship 09f114bc-b3d7-4afc-94e6-d0aa6c0c0d60
+	fromColumn: 'Fact Demand'.'Team Key'
+	toColumn: 'Dim Team'.'Team Key'
+
+relationship 8b7654c1-f32f-4b61-888f-8411c226b5ee
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Demand'.'Week Start'
+	toColumn: 'Dim Date'.Date
+
+relationship 5a180996-9df9-42c2-b8ce-c1fa7288fb56
+	fromColumn: 'Fact Timesheet'.'Person Key'
+	toColumn: 'Dim Person'.'Person Key'
+
+relationship cfd7ccd9-229d-4687-8d09-08c02babbf6d
+	fromColumn: 'Fact Timesheet'.'Team Key'
+	toColumn: 'Dim Team'.'Team Key'
+
+relationship 014b9cc4-2e8d-402a-b1e2-bdeb6aaf6f6a
+	fromColumn: 'Fact Timesheet'.'Role Key'
+	toColumn: 'Dim Role'.'Role Key'
+
+relationship bc4d2aef-db01-4dd1-8ebf-aecd1f76a467
+	fromColumn: 'Fact Timesheet'.'Project Key'
+	toColumn: 'Dim Project'.'Project Key'
+
+relationship f59401b3-aa75-4a12-aff7-a1d93de48c28
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Timesheet'.Date
+	toColumn: 'Dim Date'.Date
+
+relationship 1dce9459-625c-4473-9928-59adf9e6b00b
+	isActive: false
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fact Timesheet'.'Week Start'
+	toColumn: 'Dim Date'.Date
+

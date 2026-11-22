@@ -1,0 +1,87 @@
+/// HQLA securities: one row per security per month-end (snapshot, semi-additive). Market value positive.
+table 'Fact HQLA Holding'
+	lineageTag: 1c196d76-809e-4a35-bd79-807d6cf328b7
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: dc49bcb0-f206-43ab-b08a-3c96a7f50f58
+		summarizeBy: none
+		sourceColumn: Date
+
+	column 'Security Id'
+		dataType: string
+		isHidden
+		lineageTag: 49ae2f79-8c4d-4182-b566-be4bc77ed729
+		summarizeBy: none
+		sourceColumn: Security Id
+
+	column 'Security Name'
+		dataType: string
+		lineageTag: b478b780-50ca-4e89-b714-ef24593c7a5a
+		summarizeBy: none
+		sourceColumn: Security Name
+
+	column 'Product Code'
+		dataType: string
+		isHidden
+		lineageTag: 3ade0d16-b3f4-4067-8e38-7ee916f43287
+		summarizeBy: none
+		sourceColumn: Product Code
+
+	column 'Currency Code'
+		dataType: string
+		isHidden
+		lineageTag: 769a490d-42a0-44b4-a53c-b04736d9885b
+		summarizeBy: none
+		sourceColumn: Currency Code
+
+	column 'HQLA Level'
+		dataType: string
+		lineageTag: c344867f-4173-4f2d-b8e2-67c07d1083eb
+		summarizeBy: none
+		sourceColumn: HQLA Level
+
+	column 'Market Value Local'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: 00934f7c-002e-4ce5-9b29-dc71e50a5f3c
+		summarizeBy: none
+		sourceColumn: Market Value Local
+
+	column 'Market Value RC'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: 64949c46-e1e2-4a05-a838-a5f23d040b8b
+		summarizeBy: none
+		sourceColumn: Market Value RC
+
+	column 'Base Haircut'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 83a7c924-894b-485d-ade6-2061801f1a1e
+		summarizeBy: none
+		sourceColumn: Base Haircut
+
+	column Encumbered
+		dataType: int64
+		formatString: 0
+		lineageTag: 31f9a9a8-88f7-47b4-9770-e30d9eff43cb
+		summarizeBy: none
+		sourceColumn: Encumbered
+
+	partition 'Fact HQLA Holding' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_hqla_holding.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted, {"date", "security_id", "security_name", "product_code", "currency_code", "hqla_level", "market_value_local", "market_value_rc", "base_haircut", "encumbered"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"date", type date}, {"security_id", type text}, {"security_name", type text}, {"product_code", type text}, {"currency_code", type text}, {"hqla_level", type text}, {"market_value_local", Currency.Type}, {"market_value_rc", Currency.Type}, {"base_haircut", type number}, {"encumbered", Int64.Type}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"date", "Date"}, {"security_id", "Security Id"}, {"security_name", "Security Name"}, {"product_code", "Product Code"}, {"currency_code", "Currency Code"}, {"hqla_level", "HQLA Level"}, {"market_value_local", "Market Value Local"}, {"market_value_rc", "Market Value RC"}, {"base_haircut", "Base Haircut"}, {"encumbered", "Encumbered"}})
+				in
+				    Renamed
+

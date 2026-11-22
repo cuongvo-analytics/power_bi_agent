@@ -1,0 +1,103 @@
+/// Projects: one row per project plus -1 Internal / non-project. Pipeline projects carry a win probability.
+table 'Dim Project'
+	lineageTag: 220809d9-d2b5-4d8d-bea4-aa4aecfa08a1
+
+	column 'Project Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 25a5f482-34bc-4878-a61d-2c443806d4b0
+		summarizeBy: none
+		sourceColumn: Project Key
+
+	column 'Project Code'
+		dataType: string
+		lineageTag: 0b522add-3f7d-4bca-9253-6d1bc6261b3c
+		summarizeBy: none
+		sourceColumn: Project Code
+
+	column 'Project Name'
+		dataType: string
+		lineageTag: fd77d0af-4d3b-44b3-a473-cd5a509bd0f0
+		summarizeBy: none
+		sourceColumn: Project Name
+
+	column Portfolio
+		dataType: string
+		lineageTag: 14554b8a-4e6d-4cdf-a15d-06cb33cb44e7
+		summarizeBy: none
+		sourceColumn: Portfolio
+
+	column 'Project Manager'
+		dataType: string
+		lineageTag: e6736cd1-792a-48d9-a0c8-9bfe6cbfa08f
+		summarizeBy: none
+		sourceColumn: Project Manager
+
+	column Methodology
+		dataType: string
+		lineageTag: 6d79cd63-2c87-4b50-8ef4-b21f90dd230d
+		summarizeBy: none
+		sourceColumn: Methodology
+
+	column Status
+		dataType: string
+		lineageTag: beec38a6-5e8a-4bc0-9b3a-5b6d850f273e
+		summarizeBy: none
+		sourceColumn: Status
+
+	column 'Health RAG'
+		dataType: string
+		lineageTag: 484ee58f-ef3d-4c70-b807-4c4d80c0d198
+		summarizeBy: none
+		sourceColumn: Health RAG
+
+	column 'Is Pipeline'
+		dataType: boolean
+		lineageTag: cb97b1d3-d3bc-4393-9e8a-ba192ae9d29a
+		summarizeBy: none
+		sourceColumn: Is Pipeline
+
+	column Probability
+		dataType: double
+		formatString: 0%
+		lineageTag: 6d7518ef-020e-4fd4-b670-683ce7364dde
+		summarizeBy: none
+		sourceColumn: Probability
+
+	column 'Is Billable'
+		dataType: boolean
+		lineageTag: adc5fae1-1363-4c5d-8332-16fb46031dd6
+		summarizeBy: none
+		sourceColumn: Is Billable
+
+	column 'Start Date'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 22e71081-c7f6-4d24-92ab-e2f47ba60e0e
+		summarizeBy: none
+		sourceColumn: Start Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Finish Date'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 1dc6aaa5-f0eb-4b68-9155-6f7c555089bb
+		summarizeBy: none
+		sourceColumn: Finish Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'Dim Project' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_project.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"project_key", Int64.Type}, {"project_code", type text}, {"project_name", type text}, {"portfolio", type text}, {"project_manager", type text}, {"methodology", type text}, {"status", type text}, {"health_rag", type text}, {"is_pipeline", Int64.Type}, {"probability", type number}, {"is_billable", Int64.Type}, {"start_date", type date}, {"finish_date", type date}}, "en-US"),
+				    Flags = Table.TransformColumns(Typed, {{"is_pipeline", each _ = 1, type logical}, {"is_billable", each _ = 1, type logical}}),
+				    Renamed = Table.RenameColumns(Flags, {{"project_key", "Project Key"}, {"project_code", "Project Code"}, {"project_name", "Project Name"}, {"portfolio", "Portfolio"}, {"project_manager", "Project Manager"}, {"methodology", "Methodology"}, {"status", "Status"}, {"health_rag", "Health RAG"}, {"is_pipeline", "Is Pipeline"}, {"probability", "Probability"}, {"is_billable", "Is Billable"}, {"start_date", "Start Date"}, {"finish_date", "Finish Date"}})
+				in
+				    Renamed
+

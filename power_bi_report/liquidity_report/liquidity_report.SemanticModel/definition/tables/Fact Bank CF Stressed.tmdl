@@ -1,0 +1,59 @@
+/// Stressed (behavioural for BASE) daily cash flows over the 90-day horizon: one row per scenario x day x product x currency x flow type. Sign + in / - out. HQLA principal excluded (sits in the buffer).
+table 'Fact Bank CF Stressed'
+	lineageTag: 10c05e47-2ec2-45ad-8681-8bd3893b99d7
+
+	column 'Scenario Key'
+		dataType: string
+		isHidden
+		lineageTag: 89bd901b-0d33-4136-952f-52d34363cf05
+		summarizeBy: none
+		sourceColumn: Scenario Key
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: c7440669-9420-49a3-8acb-b9eb4dbb93fa
+		summarizeBy: none
+		sourceColumn: Date
+
+	column 'Product Code'
+		dataType: string
+		isHidden
+		lineageTag: 513b7a3b-c2c2-4fb8-9173-ca31d000a900
+		summarizeBy: none
+		sourceColumn: Product Code
+
+	column 'Currency Code'
+		dataType: string
+		isHidden
+		lineageTag: 03a0cdc3-1084-49c1-a6a6-33f85f3f97b4
+		summarizeBy: none
+		sourceColumn: Currency Code
+
+	column 'Flow Type'
+		dataType: string
+		lineageTag: 38e9a5be-88ea-496a-a3f2-23f6a3569aa6
+		summarizeBy: none
+		sourceColumn: Flow Type
+
+	column 'Amount RC'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: 51ddf484-ffca-41a3-9857-44683a7708f0
+		summarizeBy: sum
+		sourceColumn: Amount RC
+
+	partition 'Fact Bank CF Stressed' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_bank_cf_stressed.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted, {"scenario_key", "date", "product_code", "currency_code", "flow_type", "amount_rc"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"scenario_key", type text}, {"date", type date}, {"product_code", type text}, {"currency_code", type text}, {"flow_type", type text}, {"amount_rc", Currency.Type}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"scenario_key", "Scenario Key"}, {"date", "Date"}, {"product_code", "Product Code"}, {"currency_code", "Currency Code"}, {"flow_type", "Flow Type"}, {"amount_rc", "Amount RC"}})
+				in
+				    Renamed
+

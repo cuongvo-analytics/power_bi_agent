@@ -1,0 +1,79 @@
+/// Demand: one row per project x person/role x week x demand type (Allocated / Unassigned / Pipeline), planned hours. Person Key -1 = unnamed demand.
+table 'Fact Demand'
+	lineageTag: 14b74bc8-0a94-4834-9b5b-15bfa314411a
+
+	column 'Project Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: afcb210d-af3b-4937-a9a9-d709813ced3e
+		summarizeBy: none
+		sourceColumn: Project Key
+
+	column 'Person Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: bb966990-9ed1-43d0-88e4-6be0e7bca65d
+		summarizeBy: none
+		sourceColumn: Person Key
+
+	column 'Role Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d3f1f7ea-9836-4c97-b42d-233846084608
+		summarizeBy: none
+		sourceColumn: Role Key
+
+	column 'Team Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 018ca858-58c6-45ee-914b-66199808695b
+		summarizeBy: none
+		sourceColumn: Team Key
+
+	column 'Week Start'
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: ed96a941-d0e2-48c6-a140-7005fbe0ebb5
+		summarizeBy: none
+		sourceColumn: Week Start
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Demand Type'
+		dataType: string
+		lineageTag: f647f763-161b-47aa-90b5-008e8230b6c4
+		summarizeBy: none
+		sourceColumn: Demand Type
+
+	column 'Planned Hours'
+		dataType: double
+		isHidden
+		formatString: #,0.0
+		lineageTag: 1d73ac79-647a-4c56-a757-8749d5e16b08
+		summarizeBy: sum
+		sourceColumn: Planned Hours
+
+	column Probability
+		dataType: double
+		isHidden
+		formatString: 0%
+		lineageTag: a7800053-3726-4cc5-9a56-362cde07f001
+		summarizeBy: none
+		sourceColumn: Probability
+
+	partition 'Fact Demand' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_demand.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"project_key", Int64.Type}, {"person_key", Int64.Type}, {"role_key", Int64.Type}, {"team_key", Int64.Type}, {"week_start", type date}, {"demand_type", type text}, {"planned_hours", type number}, {"probability", type number}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"project_key", "Project Key"}, {"person_key", "Person Key"}, {"role_key", "Role Key"}, {"team_key", "Team Key"}, {"week_start", "Week Start"}, {"demand_type", "Demand Type"}, {"planned_hours", "Planned Hours"}, {"probability", "Probability"}})
+				in
+				    Renamed
+

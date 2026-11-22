@@ -1,0 +1,42 @@
+/// Currencies. Reporting currency USD.
+table 'Dim Currency'
+	lineageTag: 2cda97dd-3774-4342-bd0a-6f2588662525
+
+	column 'Currency Code'
+		dataType: string
+		lineageTag: 2c87613b-a3fc-4b10-a540-53968750efa4
+		summarizeBy: none
+		sourceColumn: Currency Code
+
+	column 'Currency Name'
+		dataType: string
+		lineageTag: 7f0f6bae-b1ed-4a94-8ddd-3a8ea860ab06
+		summarizeBy: none
+		sourceColumn: Currency Name
+
+	column 'Rate To RC Asof'
+		dataType: double
+		isHidden
+		lineageTag: c96d7e88-205b-4615-96a8-f7e992e26176
+		summarizeBy: none
+		sourceColumn: Rate To RC Asof
+
+	column 'Is Reporting Currency'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6c7ec603-c9fc-4f27-9907-6fb59682f97a
+		summarizeBy: none
+		sourceColumn: Is Reporting Currency
+
+	partition 'Dim Currency' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_currency.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted, {"currency_code", "currency_name", "rate_to_rc_asof", "is_reporting_currency"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"currency_code", type text}, {"currency_name", type text}, {"rate_to_rc_asof", type number}, {"is_reporting_currency", Int64.Type}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"currency_code", "Currency Code"}, {"currency_name", "Currency Name"}, {"rate_to_rc_asof", "Rate To RC Asof"}, {"is_reporting_currency", "Is Reporting Currency"}})
+				in
+				    Renamed
+

@@ -1,0 +1,111 @@
+/// Reference LCR results from the source: one row per month-end x scenario. Reconciliation only.
+table 'Ref Liquidity Metrics'
+	lineageTag: 9d816882-3d92-41bf-9d9a-1984946a1e16
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: ff6cf53f-cb74-478e-817e-e4fdd83dc1c8
+		summarizeBy: none
+		sourceColumn: Date
+
+	column 'Scenario Key'
+		dataType: string
+		isHidden
+		lineageTag: 3ac13c3d-0e59-4db8-9223-5e64e983d469
+		summarizeBy: none
+		sourceColumn: Scenario Key
+
+	column 'HQLA L1 RC'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: 5955223a-04d9-4aa2-b9d5-f1f01edfb73a
+		summarizeBy: none
+		sourceColumn: HQLA L1 RC
+
+	column 'HQLA L2A RC'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: 0f39f442-4e52-4334-a4f7-ab4def51f376
+		summarizeBy: none
+		sourceColumn: HQLA L2A RC
+
+	column 'HQLA L2B RC'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: 41a9f124-ccdd-4baf-8357-47613ffa5019
+		summarizeBy: none
+		sourceColumn: HQLA L2B RC
+
+	column 'HQLA After Haircut Caps RC'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: 4469b78e-8f89-4553-a0c0-d97adf2e86fe
+		summarizeBy: none
+		sourceColumn: HQLA After Haircut Caps RC
+
+	column 'Outflows 30D RC'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: 3c5e79c7-4620-4007-8842-a3b93f8b3390
+		summarizeBy: none
+		sourceColumn: Outflows 30D RC
+
+	column 'Inflows 30D RC'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: 124c87a6-5adc-4adf-ab03-35b40bd21ebe
+		summarizeBy: none
+		sourceColumn: Inflows 30D RC
+
+	column 'Inflows Capped RC'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: b9cd7318-7eac-4e3b-a838-9a0f5e90ca2b
+		summarizeBy: none
+		sourceColumn: Inflows Capped RC
+
+	column 'Net Outflows RC'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: 845a17cc-728a-4510-9dfd-e8496ffe9858
+		summarizeBy: none
+		sourceColumn: Net Outflows RC
+
+	column 'LCR Pct'
+		dataType: double
+		isHidden
+		formatString: 0.0%
+		lineageTag: d61efb61-8e57-430d-a800-9d76d18268d5
+		summarizeBy: none
+		sourceColumn: LCR Pct
+
+	column 'Ref Survival Days'
+		dataType: double
+		isHidden
+		formatString: 0
+		lineageTag: 9167907d-506a-4148-ac3c-719174642b29
+		summarizeBy: none
+		sourceColumn: Ref Survival Days
+
+	partition 'Ref Liquidity Metrics' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "ref_liquidity_metrics.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted, {"date", "scenario_key", "hqla_l1_rc", "hqla_l2a_rc", "hqla_l2b_rc", "hqla_after_haircut_caps_rc", "outflows_30d_rc", "inflows_30d_rc", "inflows_capped_rc", "net_outflows_rc", "lcr_pct", "survival_days"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"date", type date}, {"scenario_key", type text}, {"hqla_l1_rc", Currency.Type}, {"hqla_l2a_rc", Currency.Type}, {"hqla_l2b_rc", Currency.Type}, {"hqla_after_haircut_caps_rc", Currency.Type}, {"outflows_30d_rc", Currency.Type}, {"inflows_30d_rc", Currency.Type}, {"inflows_capped_rc", Currency.Type}, {"net_outflows_rc", Currency.Type}, {"lcr_pct", type number}, {"survival_days", type number}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"date", "Date"}, {"scenario_key", "Scenario Key"}, {"hqla_l1_rc", "HQLA L1 RC"}, {"hqla_l2a_rc", "HQLA L2A RC"}, {"hqla_l2b_rc", "HQLA L2B RC"}, {"hqla_after_haircut_caps_rc", "HQLA After Haircut Caps RC"}, {"outflows_30d_rc", "Outflows 30D RC"}, {"inflows_30d_rc", "Inflows 30D RC"}, {"inflows_capped_rc", "Inflows Capped RC"}, {"net_outflows_rc", "Net Outflows RC"}, {"lcr_pct", "LCR Pct"}, {"survival_days", "Ref Survival Days"}})
+				in
+				    Renamed
+

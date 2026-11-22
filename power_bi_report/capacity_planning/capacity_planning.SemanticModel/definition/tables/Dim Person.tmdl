@@ -1,0 +1,113 @@
+/// People: one row per person plus -1 Unassigned (role-level / pipeline demand). Current Team / Current Role are text only (no relationship); facts carry the point-in-time team and role keys.
+table 'Dim Person'
+	lineageTag: 98b27a85-b5cc-44bc-bf54-d1b7cfacf435
+
+	column 'Person Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ea419abb-8c9d-472c-8b16-02da191ec74d
+		summarizeBy: none
+		sourceColumn: Person Key
+
+	column 'Person Name'
+		dataType: string
+		lineageTag: ee79457e-fab0-4289-8c96-3c430a5fe010
+		summarizeBy: none
+		sourceColumn: Person Name
+
+	column 'Current Team'
+		dataType: string
+		lineageTag: b7b1e13a-c951-4019-9bc3-5efe0c210543
+		summarizeBy: none
+		sourceColumn: Current Team
+
+	column 'Current Role'
+		dataType: string
+		lineageTag: e5d1d780-b544-4c1a-9d05-72de213509c2
+		summarizeBy: none
+		sourceColumn: Current Role
+
+	column Location
+		dataType: string
+		lineageTag: ab47407f-4e27-4268-a51b-f94d0167ce24
+		summarizeBy: none
+		sourceColumn: Location
+
+	column 'Employment Type'
+		dataType: string
+		lineageTag: 02655b77-16da-4de9-9f18-09d9fdbba2f7
+		summarizeBy: none
+		sourceColumn: Employment Type
+
+	column 'Contract FTE'
+		dataType: double
+		formatString: 0.00
+		lineageTag: b6cdcaf7-6d91-4bd5-bfea-74ba08f0c535
+		summarizeBy: none
+		sourceColumn: Contract FTE
+
+	column 'Contract Weekly Hours'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: deb3d8d7-f4c9-4404-a835-78c48cd00c32
+		summarizeBy: none
+		sourceColumn: Contract Weekly Hours
+
+	column 'Cost Rate'
+		dataType: double
+		formatString: #,0
+		lineageTag: 1cc6d43e-bb78-4ea9-9c80-fe64e4857d9f
+		summarizeBy: none
+		sourceColumn: Cost Rate
+
+	column 'Utilisation Target Pct'
+		dataType: double
+		formatString: 0%
+		lineageTag: b55c9726-3859-421d-9514-9e823b8ebbe1
+		summarizeBy: none
+		sourceColumn: Utilisation Target Pct
+
+	column 'Billable Target Pct'
+		dataType: double
+		formatString: 0%
+		lineageTag: cf5f426b-d2ac-4d15-a8d5-d7b3cc7a053c
+		summarizeBy: none
+		sourceColumn: Billable Target Pct
+
+	column 'Start Date'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 0bd71c63-d764-4da6-8e5c-d0b6bf951736
+		summarizeBy: none
+		sourceColumn: Start Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'End Date'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 89936d0e-4d36-4360-b3c8-82a094a935ec
+		summarizeBy: none
+		sourceColumn: End Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Is Active'
+		dataType: boolean
+		lineageTag: 9ea1bc5d-6e7b-42c1-b5ae-f4550215b43c
+		summarizeBy: none
+		sourceColumn: Is Active
+
+	partition 'Dim Person' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_person.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"person_key", Int64.Type}, {"person_name", type text}, {"current_team", type text}, {"current_role", type text}, {"location", type text}, {"employment_type", type text}, {"contract_fte", type number}, {"standard_weekly_hours", type number}, {"cost_rate", type number}, {"utilisation_target_pct", type number}, {"billable_target_pct", type number}, {"start_date", type date}, {"end_date", type date}, {"is_active", Int64.Type}}, "en-US"),
+				    Flags = Table.TransformColumns(Typed, {{"is_active", each _ = 1, type logical}}),
+				    Renamed = Table.RenameColumns(Flags, {{"person_key", "Person Key"}, {"person_name", "Person Name"}, {"current_team", "Current Team"}, {"current_role", "Current Role"}, {"location", "Location"}, {"employment_type", "Employment Type"}, {"contract_fte", "Contract FTE"}, {"standard_weekly_hours", "Contract Weekly Hours"}, {"cost_rate", "Cost Rate"}, {"utilisation_target_pct", "Utilisation Target Pct"}, {"billable_target_pct", "Billable Target Pct"}, {"start_date", "Start Date"}, {"end_date", "End Date"}, {"is_active", "Is Active"}})
+				in
+				    Renamed
+

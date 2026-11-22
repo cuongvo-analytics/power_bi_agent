@@ -287,7 +287,7 @@ def story_metrics(t):
     alloc_pct = (alloc.reindex(avail.index, fill_value=0) / avail).unstack(0)
     hist_cap = cap[cap.week_start <= CURRENT_WEEK]
     proj_hours = ts[(ts.is_project_time == 1) & (ts.approval_status == "Approved")].groupby("team_key").hours.sum()
-    util_team = proj_hours / hist_cap[hist_cap.week_start < CURRENT_WEEK].groupby("team_key").available_hours.sum()
+    util_team = proj_hours / hist_cap.groupby("team_key").available_hours.sum()   # same 26 weeks on both sides
     # both sides by the month of the week's Monday (a week that crosses a month boundary belongs to its Monday's month)
     ts_dates = pd.to_datetime(ts.date)
     ts = ts.assign(month=(ts_dates - pd.to_timedelta(ts_dates.dt.weekday, unit="D")).dt.strftime("%Y-%m"))

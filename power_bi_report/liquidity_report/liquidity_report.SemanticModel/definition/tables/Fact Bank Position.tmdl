@@ -1,0 +1,84 @@
+/// Bank positions: one row per contract per month-end (snapshot, semi-additive). Balances positive, reporting currency in RC columns.
+table 'Fact Bank Position'
+	lineageTag: 2597c813-1954-4021-a24f-2ec404253a4f
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: afe8172c-c33c-40e6-a11f-a721574b7d4b
+		summarizeBy: none
+		sourceColumn: Date
+
+	column 'Contract Id'
+		dataType: string
+		isHidden
+		lineageTag: 3b0b2e2f-ead4-45d9-9a05-45907c826593
+		summarizeBy: none
+		sourceColumn: Contract Id
+
+	column 'Product Code'
+		dataType: string
+		isHidden
+		lineageTag: 9b5f9d02-a57f-48ca-b49e-16307772752a
+		summarizeBy: none
+		sourceColumn: Product Code
+
+	column 'Currency Code'
+		dataType: string
+		isHidden
+		lineageTag: 80091593-30fd-40a3-84df-cdd057cdbbaf
+		summarizeBy: none
+		sourceColumn: Currency Code
+
+	column 'Bucket Key'
+		dataType: string
+		isHidden
+		lineageTag: 3a888248-8b5d-4ccf-a898-5c9608f65a43
+		summarizeBy: none
+		sourceColumn: Bucket Key
+
+	column 'Balance Local'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: 000cd961-86da-47e4-8942-34d40ba2066a
+		summarizeBy: none
+		sourceColumn: Balance Local
+
+	column 'Balance RC'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: eec94dd6-15f4-47f2-ba08-06df58a55c28
+		summarizeBy: none
+		sourceColumn: Balance RC
+
+	column 'Principal Due 30D RC'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: a44b2dc1-8956-4022-8e6c-08489411c784
+		summarizeBy: none
+		sourceColumn: Principal Due 30D RC
+
+	column 'Remaining Maturity Days'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2ff20903-398a-4499-95eb-13eef56d265a
+		summarizeBy: none
+		sourceColumn: Remaining Maturity Days
+
+	partition 'Fact Bank Position' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_bank_position.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted, {"date", "contract_id", "product_code", "currency_code", "bucket_key", "balance_local", "balance_rc", "principal_due_30d_rc", "remaining_maturity_days"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"date", type date}, {"contract_id", type text}, {"product_code", type text}, {"currency_code", type text}, {"bucket_key", type text}, {"balance_local", Currency.Type}, {"balance_rc", Currency.Type}, {"principal_due_30d_rc", Currency.Type}, {"remaining_maturity_days", Int64.Type}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"date", "Date"}, {"contract_id", "Contract Id"}, {"product_code", "Product Code"}, {"currency_code", "Currency Code"}, {"bucket_key", "Bucket Key"}, {"balance_local", "Balance Local"}, {"balance_rc", "Balance RC"}, {"principal_due_30d_rc", "Principal Due 30D RC"}, {"remaining_maturity_days", "Remaining Maturity Days"}})
+				in
+				    Renamed
+

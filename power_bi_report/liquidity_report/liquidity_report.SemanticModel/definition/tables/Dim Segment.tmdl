@@ -1,0 +1,29 @@
+/// Customer segments. Filters Dim Product (accepted snowflake).
+table 'Dim Segment'
+	lineageTag: 0c381623-b8ec-4cf0-9517-039fd65b1b6b
+
+	column 'Segment Code'
+		dataType: string
+		isHidden
+		lineageTag: 8dc95a5b-893b-429b-a6e5-7cb25ef523da
+		summarizeBy: none
+		sourceColumn: Segment Code
+
+	column 'Segment Name'
+		dataType: string
+		lineageTag: 15bd5111-b489-432d-90c0-8448f9a9043d
+		summarizeBy: none
+		sourceColumn: Segment Name
+
+	partition 'Dim Segment' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_segment.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted, {"segment_code", "segment_name"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"segment_code", type text}, {"segment_name", type text}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"segment_code", "Segment Code"}, {"segment_name", "Segment Name"}})
+				in
+				    Renamed
+

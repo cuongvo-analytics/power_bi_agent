@@ -1,0 +1,79 @@
+/// Contracts (drill-through only). Not related to Dim Product: the facts carry Product Code.
+table 'Dim Contract'
+	lineageTag: afc671b0-f662-4c09-adc6-d3d5951200e3
+
+	column 'Contract Id'
+		dataType: string
+		isHidden
+		lineageTag: d15e6c38-21ef-40f2-8daf-9f38dc62ce05
+		summarizeBy: none
+		sourceColumn: Contract Id
+
+	column 'Product Code'
+		dataType: string
+		isHidden
+		lineageTag: 682cda41-8db0-47f5-b4aa-933f5b644b91
+		summarizeBy: none
+		sourceColumn: Product Code
+
+	column 'Segment Code'
+		dataType: string
+		isHidden
+		lineageTag: 185b8c39-91bd-435e-9f53-ecacd6ccb48b
+		summarizeBy: none
+		sourceColumn: Segment Code
+
+	column 'Currency Code'
+		dataType: string
+		isHidden
+		lineageTag: 63f7431c-fe1c-4536-8c41-bdc6b6909de4
+		summarizeBy: none
+		sourceColumn: Currency Code
+
+	column 'Counterparty Name'
+		dataType: string
+		lineageTag: 45f33a18-ed9d-46a9-a4a5-cc9089f3977f
+		summarizeBy: none
+		sourceColumn: Counterparty Name
+
+	column 'Start Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 705e6218-3a87-4846-bbd1-8eb2427780c9
+		summarizeBy: none
+		sourceColumn: Start Date
+
+	column 'Maturity Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 7e0a9884-c9f2-4f9d-922c-da06946d6043
+		summarizeBy: none
+		sourceColumn: Maturity Date
+
+	column 'Interest Rate'
+		dataType: double
+		formatString: 0.00%
+		lineageTag: 0cc118ad-2565-4877-8c8c-48f01659ac91
+		summarizeBy: none
+		sourceColumn: Interest Rate
+
+	column 'Notional Local'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: 77264b10-e269-4382-b627-afdd93b7fff6
+		summarizeBy: none
+		sourceColumn: Notional Local
+
+	partition 'Dim Contract' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_contract.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted, {"contract_id", "product_code", "segment_code", "currency_code", "counterparty_name", "start_date", "maturity_date", "interest_rate", "notional_local"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"contract_id", type text}, {"product_code", type text}, {"segment_code", type text}, {"currency_code", type text}, {"counterparty_name", type text}, {"start_date", type date}, {"maturity_date", type date}, {"interest_rate", type number}, {"notional_local", Currency.Type}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"contract_id", "Contract Id"}, {"product_code", "Product Code"}, {"segment_code", "Segment Code"}, {"currency_code", "Currency Code"}, {"counterparty_name", "Counterparty Name"}, {"start_date", "Start Date"}, {"maturity_date", "Maturity Date"}, {"interest_rate", "Interest Rate"}, {"notional_local", "Notional Local"}})
+				in
+				    Renamed
+

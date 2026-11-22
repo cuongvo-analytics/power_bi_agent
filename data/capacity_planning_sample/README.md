@@ -58,7 +58,7 @@ negative = shortfall):
 
 - **Data Engineers** allocated 111%–120% of available hours in weeks 2026-12-07 → 2027-01-11 (Risk Model Automation starts).
 - **BI Developers** go short from 2026-12-28 when the AI Analytics Pilot (pipeline, 70 %) starts.
-- **Utilisation by team** (approved project hours ÷ available, history weeks): Data & Analytics 85%, Platform 59%, Application Development 81%, PMO 74%.
+- **Utilisation by team** (approved project hours ÷ available, history weeks): Data & Analytics 82%, Platform 57%, Application Development 78%, PMO 70%.
 - **Timesheet compliance by week-start month** (all booked hours ÷ expected = gross − holiday − leave): 2026-05 96%, 2026-06 98%, 2026-07 98%, 2026-08 92%, 2026-09 98%, 2026-10 96%, 2026-11 99%.
   Dips in August and the last week of October. The current week includes not-yet-submitted days.
   Grouping by calendar day instead of week-start month gives values above 100 % in some months.

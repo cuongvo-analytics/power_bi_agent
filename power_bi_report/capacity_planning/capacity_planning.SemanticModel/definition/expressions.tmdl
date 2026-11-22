@@ -1,0 +1,5 @@
+expression DataFolder = "D:\Personal\powerbi_agent\data\capacity_planning_sample\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: a4e1bcc6-90bf-4ec8-8dd1-cdf149561746
+
+	annotation PBI_ResultType = Text
+

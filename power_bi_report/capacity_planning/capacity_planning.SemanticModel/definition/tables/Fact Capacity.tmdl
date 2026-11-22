@@ -1,0 +1,89 @@
+/// Capacity: one row per person per week (Monday Week Start), hours. Team Key / Role Key are point-in-time. Available = gross - holiday - leave - non-project.
+table 'Fact Capacity'
+	lineageTag: 3214a564-0fe3-4389-9a5d-13455d1beaa5
+
+	column 'Person Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ba20fd64-0cba-49f7-90ec-4233af361225
+		summarizeBy: none
+		sourceColumn: Person Key
+
+	column 'Team Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3937b5e9-538b-48f6-abda-127da9a7861d
+		summarizeBy: none
+		sourceColumn: Team Key
+
+	column 'Role Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 8dc4f964-d3f5-4c2c-b4a1-8c248b3ae46d
+		summarizeBy: none
+		sourceColumn: Role Key
+
+	column 'Week Start'
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: 656130af-a9e8-4b6c-95d4-5001a507c85f
+		summarizeBy: none
+		sourceColumn: Week Start
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Gross Hours'
+		dataType: double
+		isHidden
+		formatString: #,0.0
+		lineageTag: bd802cb9-94e3-4caf-96d1-a255eed32242
+		summarizeBy: sum
+		sourceColumn: Gross Hours
+
+	column 'Holiday Hours'
+		dataType: double
+		isHidden
+		formatString: #,0.0
+		lineageTag: 2869c0a4-bcac-4545-ac94-678b2f2f43d4
+		summarizeBy: sum
+		sourceColumn: Holiday Hours
+
+	column 'Leave Hours'
+		dataType: double
+		isHidden
+		formatString: #,0.0
+		lineageTag: 7ba99251-8677-4ad1-aca1-79072ea61e12
+		summarizeBy: sum
+		sourceColumn: Leave Hours
+
+	column 'Non-project Hours'
+		dataType: double
+		isHidden
+		formatString: #,0.0
+		lineageTag: 71382e6b-4ee7-4aec-badf-c18ca853cafa
+		summarizeBy: sum
+		sourceColumn: Non-project Hours
+
+	column 'Available Hours'
+		dataType: double
+		isHidden
+		formatString: #,0.0
+		lineageTag: e669f417-435e-405b-b44e-48e72d341302
+		summarizeBy: sum
+		sourceColumn: Available Hours
+
+	partition 'Fact Capacity' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_capacity.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"person_key", Int64.Type}, {"team_key", Int64.Type}, {"role_key", Int64.Type}, {"week_start", type date}, {"gross_hours", type number}, {"holiday_hours", type number}, {"leave_hours", type number}, {"non_project_hours", type number}, {"available_hours", type number}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"person_key", "Person Key"}, {"team_key", "Team Key"}, {"role_key", "Role Key"}, {"week_start", "Week Start"}, {"gross_hours", "Gross Hours"}, {"holiday_hours", "Holiday Hours"}, {"leave_hours", "Leave Hours"}, {"non_project_hours", "Non-project Hours"}, {"available_hours", "Available Hours"}})
+				in
+				    Renamed
+

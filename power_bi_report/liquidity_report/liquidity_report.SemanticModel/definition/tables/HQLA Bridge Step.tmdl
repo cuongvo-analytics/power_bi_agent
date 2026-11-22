@@ -1,0 +1,36 @@
+/// Disconnected step list for the HQLA bridge waterfall (market value -> HQLA stock). Used with [HQLA Bridge Amount].
+table 'HQLA Bridge Step'
+	lineageTag: 9f8943bd-85c1-48a4-8608-246876a20281
+
+	column Step
+		dataType: string
+		lineageTag: b1609653-5bb7-402e-ac54-20f6ef70b38b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Step]
+		sortByColumn: 'Step Order'
+
+	column 'Step Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f49743b8-7732-415b-9020-654b96f71eb6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Step Order]
+
+	partition 'HQLA Bridge Step' = calculated
+		mode: import
+		source =
+				DATATABLE (
+				    "Step", STRING,
+				    "Step Order", INTEGER,
+				    {
+				        { "Market value", 1 },
+				        { "Haircuts", 2 },
+				        { "Encumbered", 3 },
+				        { "Caps", 4 },
+				        { "HQLA stock", 5 }
+				    }
+				)
+

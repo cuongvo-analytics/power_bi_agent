@@ -1,0 +1,321 @@
+/// Measure table: all report measures in display folders P5, P6, P9.
+table _Measures
+	lineageTag: d9cccc1a-13b3-49cc-9e9f-253c461df91b
+
+	/// Status date = last timesheet date in the data (2026-11-20), independent of filters. Used for titles.
+	measure 'Status Date' = CALCULATE ( MAX ( 'Fact Timesheet'[Date] ), REMOVEFILTERS () )
+		formatString: d mmm yyyy
+		displayFolder: P9. Helpers
+		lineageTag: 5858f8a1-4c2a-4213-a391-7bc5a87a5f6a
+
+	/// Header text: 'Status as of <status date>'.
+	measure 'Title Status Date' = "Status as of " & FORMAT ( [Status Date], "d mmm yyyy" )
+		displayFolder: P9. Helpers
+		lineageTag: 7a0377e2-21a0-49f4-8f5f-33602e264d81
+
+	/// Number of capacity weeks (Mondays with capacity data) in the date context, ignoring person/team/role filters. Denominator for FTE; the calendar runs past the last plan week, so counting calendar Mondays would understate FTE.
+	measure 'Weeks In Context' =
+			CALCULATE (
+				DISTINCTCOUNT ( 'Fact Capacity'[Week Start] ),
+				REMOVEFILTERS ( 'Dim Person' ),
+				REMOVEFILTERS ( 'Dim Team' ),
+				REMOVEFILTERS ( 'Dim Role' )
+			)
+		formatString: #,0
+		displayFolder: P9. Helpers
+		lineageTag: cc68cb6e-b1fc-4704-94f5-36de61cd4791
+
+	/// Company standard week in hours (40). FTE = hours / (Standard Weekly Hours x Weeks In Context).
+	measure 'Standard Weekly Hours' = 40
+		formatString: #,0
+		displayFolder: P9. Helpers
+		lineageTag: 24924fcb-2919-422f-bbda-91e04062850a
+
+	/// Hex colour for Allocation %: > 100 % red (over-allocated), < 70 % amber (under-used), otherwise green; grey when blank.
+	measure 'Allocation Color' =
+			VAR _a = [Allocation %]
+			RETURN
+				SWITCH ( TRUE (), ISBLANK ( _a ), "#525355", _a > 1, "#C23B22", _a < 0.7, "#D97706", "#1E7A00" )
+		isHidden
+		displayFolder: P9. Helpers
+		lineageTag: 6d1ac452-576f-4863-8f8e-0059311e2513
+
+	/// Hex colour for capacity gap: >= 0 green (spare capacity), < 0 red (shortfall); grey when blank.
+	measure 'Gap Color' =
+			VAR _g = [Capacity Gap Hours]
+			RETURN
+				SWITCH ( TRUE (), ISBLANK ( _g ), "#525355", _g >= 0, "#1E7A00", "#C23B22" )
+		isHidden
+		displayFolder: P9. Helpers
+		lineageTag: f55e784a-4c15-4d30-88fb-472d4336be11
+
+	/// Hex colour for project Health RAG (green / amber / red, grey for no status).
+	measure 'RAG Color' =
+			SWITCH (
+				SELECTEDVALUE ( 'Dim Project'[Health RAG] ),
+				"Green", "#1E7A00",
+				"Amber", "#D97706",
+				"Red", "#C23B22",
+				"#525355"
+			)
+		isHidden
+		displayFolder: P9. Helpers
+		lineageTag: 2803dd4a-6f9a-4866-9787-3c3a22ddecc9
+
+	/// Hex colour for Utilisation vs Target: >= 0 pp green, < 0 pp red; grey when blank.
+	measure 'Utilisation vs Target Color' =
+			VAR _v = [Utilisation vs Target]
+			RETURN
+				SWITCH ( TRUE (), ISBLANK ( _v ), "#525355", _v >= 0, "#1E7A00", "#C23B22" )
+		isHidden
+		displayFolder: P9. Helpers
+		lineageTag: b84054e8-28e7-4466-9e88-e7beaea55c43
+
+	/// Background colour for Timesheet Compliance %: amber below 95 %, no colour otherwise.
+	measure 'Compliance Color' =
+			VAR _c = [Timesheet Compliance %]
+			RETURN
+				IF ( NOT ISBLANK ( _c ) && _c < 0.95, "#D97706" )
+		isHidden
+		displayFolder: P9. Helpers
+		lineageTag: 3a8cede9-1f5c-40f4-83db-e2673e497152
+
+	/// Contracted hours before holidays, leave and non-project time. Hours, additive over weeks.
+	measure 'Gross Hours' = SUM ( 'Fact Capacity'[Gross Hours] )
+		formatString: #,0
+		displayFolder: P5. Capacity & Demand
+		lineageTag: 8485b6f0-49a4-4073-95af-9a83e88b1c44
+
+	/// Hours available for project work = gross - holiday - leave - non-project. Hours, additive over weeks.
+	measure 'Available Hours' = SUM ( 'Fact Capacity'[Available Hours] )
+		formatString: #,0
+		displayFolder: P5. Capacity & Demand
+		lineageTag: c9b509eb-a2ce-4cba-90b5-d5eb2356a29b
+
+	/// Leave plus public holiday hours. Hours.
+	measure 'Leave Hours' = SUM ( 'Fact Capacity'[Leave Hours] ) + SUM ( 'Fact Capacity'[Holiday Hours] )
+		formatString: #,0
+		displayFolder: P5. Capacity & Demand
+		lineageTag: 7275f0c5-73bb-42ed-8901-c93c2b4ac1ca
+
+	/// Planned hours assigned to named people (demand type Allocated, probability 1). Hours.
+	measure 'Allocated Hours' = CALCULATE ( SUM ( 'Fact Demand'[Planned Hours] ), 'Fact Demand'[Demand Type] = "Allocated" )
+		formatString: #,0
+		displayFolder: P5. Capacity & Demand
+		lineageTag: 92678acb-56b6-49b2-96b7-b468289841ce
+
+	/// Approved demand not yet assigned to a person (role-level, Person Key -1). Hours.
+	measure 'Unassigned Demand Hours' = CALCULATE ( SUM ( 'Fact Demand'[Planned Hours] ), 'Fact Demand'[Demand Type] = "Unassigned" )
+		formatString: #,0
+		displayFolder: P5. Capacity & Demand
+		lineageTag: b4ad4f69-c6dc-4d53-bf6d-fb1b66900b93
+
+	/// Demand of not-yet-approved pipeline projects weighted by win probability. Hours.
+	measure 'Pipeline Hours Weighted' =
+			SUMX (
+				FILTER ( 'Fact Demand', 'Fact Demand'[Demand Type] = "Pipeline" ),
+				'Fact Demand'[Planned Hours] * 'Fact Demand'[Probability]
+			)
+		formatString: #,0
+		displayFolder: P5. Capacity & Demand
+		lineageTag: 729b6d92-511c-46c7-b2f6-bfe57a62e695
+
+	/// Total demand = allocated + unassigned + probability-weighted pipeline. Hours.
+	measure 'Demand Hours' = [Allocated Hours] + [Unassigned Demand Hours] + [Pipeline Hours Weighted]
+		formatString: #,0
+		displayFolder: P5. Capacity & Demand
+		lineageTag: fe74a008-cbf4-4288-8a6e-0dd84182eba9
+
+	/// Available - demand. Positive = spare capacity (good), negative = shortfall. Hours.
+	measure 'Capacity Gap Hours' = [Available Hours] - [Demand Hours]
+		formatString: #,##0;(#,##0);-
+		displayFolder: P5. Capacity & Demand
+		lineageTag: 3b396c4f-e6cc-4932-8c42-09b96f4bb410
+
+	/// Allocated hours / available hours. 70-100 % healthy; > 100 % over-allocated; < 70 % under-used.
+	measure 'Allocation %' = DIVIDE ( [Allocated Hours], [Available Hours] )
+		formatString: 0.0%
+		displayFolder: P5. Capacity & Demand
+		lineageTag: 25b75473-90ef-489a-984e-76cd14f9a017
+
+	/// Total demand / available hours. > 100 % = demand exceeds capacity.
+	measure 'Demand vs Capacity %' = DIVIDE ( [Demand Hours], [Available Hours] )
+		formatString: 0.0%
+		displayFolder: P5. Capacity & Demand
+		lineageTag: b720e4f5-c6cd-49c4-9184-28836abf1b3d
+
+	/// Available hours expressed as average FTE over the weeks in context (40 h week). Derived, not additive.
+	measure 'Available FTE' = DIVIDE ( [Available Hours], [Standard Weekly Hours] * [Weeks In Context] )
+		formatString: #,0.0
+		displayFolder: P5. Capacity & Demand
+		lineageTag: c0ec7899-ea73-4245-8f75-de83b0813421
+
+	/// Demand hours expressed as average FTE over the weeks in context (40 h week).
+	measure 'Demand FTE' = DIVIDE ( [Demand Hours], [Standard Weekly Hours] * [Weeks In Context] )
+		formatString: #,0.0
+		displayFolder: P5. Capacity & Demand
+		lineageTag: 4f7d010f-1c3c-417b-92c9-82deefa18c8a
+
+	/// Capacity gap as average FTE over the weeks in context. Positive = spare, negative = shortfall.
+	measure 'Capacity Gap FTE' = DIVIDE ( [Capacity Gap Hours], [Standard Weekly Hours] * [Weeks In Context] )
+		formatString: #,0.0;(#,0.0);-
+		displayFolder: P5. Capacity & Demand
+		lineageTag: bf06be53-e5f1-47be-bde7-069adf680ee7
+
+	/// Count of person-weeks where allocated hours exceed available hours (evaluated per person and week). Lower is better.
+	measure 'Over-allocated Person Weeks' =
+			VAR _n =
+				COUNTROWS (
+					FILTER (
+						CROSSJOIN ( VALUES ( 'Dim Person'[Person Key] ), FILTER ( VALUES ( 'Dim Date'[Date] ), WEEKDAY ( 'Dim Date'[Date], 2 ) = 1 ) ),
+						[Allocated Hours] > [Available Hours] && [Available Hours] > 0
+					)
+				)
+			RETURN
+				COALESCE ( _n, 0 )
+		formatString: #,0
+		displayFolder: P5. Capacity & Demand
+		lineageTag: 43fe85ee-c22b-4f2e-af47-75929931c225
+
+	/// Number of people with at least one over-allocated week in context. Lower is better.
+	measure 'Over-allocated People' =
+			VAR _n =
+				COUNTROWS (
+					FILTER (
+						VALUES ( 'Dim Person'[Person Key] ),
+						'Dim Person'[Person Key] <> -1 && [Over-allocated Person Weeks] > 0
+					)
+				)
+			RETURN
+				COALESCE ( _n, 0 )
+		formatString: #,0
+		displayFolder: P5. Capacity & Demand
+		lineageTag: 5d3e2ac3-394c-4ef0-97ba-12015c428bbb
+
+	/// Unallocated available hours summed per person-week (one person's overload does not hide another's bench). Hours; lower is better.
+	measure 'Bench Hours' =
+			SUMX (
+				CROSSJOIN ( VALUES ( 'Dim Person'[Person Key] ), FILTER ( VALUES ( 'Dim Date'[Date] ), WEEKDAY ( 'Dim Date'[Date], 2 ) = 1 ) ),
+				MAX ( 0, [Available Hours] - [Allocated Hours] )
+			)
+		formatString: #,0
+		displayFolder: P5. Capacity & Demand
+		lineageTag: a1c42279-6ac6-47b5-bdb6-fa9da2022777
+
+	/// Distinct projects with demand (any type) in context, excluding -1 Internal.
+	measure 'Active Projects' =
+			CALCULATE (
+				DISTINCTCOUNT ( 'Fact Demand'[Project Key] ),
+				'Fact Demand'[Project Key] <> -1,
+				'Fact Demand'[Planned Hours] > 0
+			)
+		formatString: #,0
+		displayFolder: P5. Capacity & Demand
+		lineageTag: 998236f1-2fce-4e9d-8e5e-dca1a521a84a
+
+	/// Approved timesheet hours (project + internal), attributed to the Monday week start so they align with weekly capacity. Hours.
+	measure 'Booked Hours' =
+			CALCULATE (
+				SUM ( 'Fact Timesheet'[Hours] ),
+				'Fact Timesheet'[Approval Status] = "Approved",
+				USERELATIONSHIP ( 'Fact Timesheet'[Week Start], 'Dim Date'[Date] )
+			)
+		formatString: #,0
+		displayFolder: P6. Utilisation
+		lineageTag: c9045b29-4685-4f9c-8373-88c85e90989b
+
+	/// All timesheet hours regardless of approval status (Approved, Submitted, Draft), by week start. Used for compliance. Hours.
+	measure 'Timesheet Hours' =
+			CALCULATE (
+				SUM ( 'Fact Timesheet'[Hours] ),
+				USERELATIONSHIP ( 'Fact Timesheet'[Week Start], 'Dim Date'[Date] )
+			)
+		formatString: #,0
+		displayFolder: P6. Utilisation
+		lineageTag: 5fb9ebdf-3bf5-4079-b81d-0a91468d1dfa
+
+	/// Approved hours booked to projects (excludes internal time). Hours.
+	measure 'Project Hours' = CALCULATE ( [Booked Hours], 'Fact Timesheet'[Is Project Time] = TRUE () )
+		formatString: #,0
+		displayFolder: P6. Utilisation
+		lineageTag: 92eb9a3f-ca1c-48d3-90e8-fb569b3e8fac
+
+	/// Approved billable hours. Hours.
+	measure 'Billable Hours' = CALCULATE ( [Booked Hours], 'Fact Timesheet'[Is Billable] = TRUE () )
+		formatString: #,0
+		displayFolder: P6. Utilisation
+		lineageTag: 76fcdb1a-dc5a-4d91-99e8-decbe7408b84
+
+	/// Approved project hours that are not billable = project - billable. Hours.
+	measure 'Non-billable Project Hours' = [Project Hours] - [Billable Hours]
+		formatString: #,0
+		displayFolder: P6. Utilisation
+		lineageTag: d5f70327-1bbb-41ef-b357-53f8f7ee1113
+
+	/// Approved project hours / available hours. Higher is better up to target; compare with Utilisation Target %.
+	measure 'Utilisation %' = DIVIDE ( [Project Hours], [Available Hours] )
+		formatString: 0.0%
+		displayFolder: P6. Utilisation
+		lineageTag: 86c69c3c-6b24-4b60-914a-039d209cc25b
+
+	/// Approved billable hours / available hours.
+	measure 'Billable Utilisation %' = DIVIDE ( [Billable Hours], [Available Hours] )
+		formatString: 0.0%
+		displayFolder: P6. Utilisation
+		lineageTag: 32ce58c1-5dd0-441f-b0da-84e2c309ffdd
+
+	/// Share of approved booked hours that are billable.
+	measure 'Billable Mix %' = DIVIDE ( [Billable Hours], [Booked Hours] )
+		formatString: 0.0%
+		displayFolder: P6. Utilisation
+		lineageTag: c895ec84-213a-42c3-8628-7e00707b5f4c
+
+	/// Utilisation target weighted by each person's available hours.
+	measure 'Utilisation Target %' =
+			DIVIDE (
+				SUMX (
+					VALUES ( 'Dim Person'[Person Key] ),
+					[Available Hours] * CALCULATE ( MAX ( 'Dim Person'[Utilisation Target Pct] ) )
+				),
+				[Available Hours]
+			)
+		formatString: 0.0%
+		displayFolder: P6. Utilisation
+		lineageTag: 9f5aae2e-d6a0-481e-bce7-5d4c0622a77d
+
+	/// Utilisation % minus target, in percentage points. >= 0 favourable.
+	measure 'Utilisation vs Target' = [Utilisation %] - [Utilisation Target %]
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: P6. Utilisation
+		lineageTag: a0634e43-5905-484f-a157-fd2a5658b343
+
+	/// Hours people are expected to book = gross - holiday - leave. Hours.
+	measure 'Expected Timesheet Hours' = [Gross Hours] - [Leave Hours]
+		formatString: #,0
+		displayFolder: P6. Utilisation
+		lineageTag: 8b3e2c54-d271-4290-88c1-1680d1e90fad
+
+	/// All booked hours (any approval status) / expected timesheet hours, by week start. Target >= 95 %.
+	measure 'Timesheet Compliance %' = DIVIDE ( [Timesheet Hours], [Expected Timesheet Hours] )
+		formatString: 0.0%
+		displayFolder: P6. Utilisation
+		lineageTag: b9b440bc-d55c-4061-b91c-854a7bc42d2a
+
+	/// Approved project hours - allocated (planned) hours. Positive = booked more than planned. Hours; neutral (no good/bad direction).
+	measure 'Plan Variance Hours' = [Project Hours] - [Allocated Hours]
+		formatString: #,##0;(#,##0);-
+		displayFolder: P6. Utilisation
+		lineageTag: 9619759f-423c-4f47-83b8-38ebd07aa8bf
+
+	column Column
+		dataType: string
+		isHidden
+		lineageTag: 0b4b310d-90bc-454d-bee2-4d968d431143
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Column]
+
+	partition _Measures = calculated
+		mode: import
+		source = Row("Column", BLANK())
+

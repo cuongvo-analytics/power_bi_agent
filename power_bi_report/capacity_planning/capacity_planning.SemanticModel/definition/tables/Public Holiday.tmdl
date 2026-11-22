@@ -1,0 +1,36 @@
+/// Reference table: public holidays per location (unrelated; holiday hours are already deducted in Fact Capacity).
+table 'Public Holiday'
+	lineageTag: 50b6573f-b13f-4689-b557-32c7218311a2
+
+	column Location
+		dataType: string
+		lineageTag: c1edb3d1-28d0-4bf1-a0c7-cda330a94f56
+		summarizeBy: none
+		sourceColumn: Location
+
+	column Date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 727113ae-77ef-4688-8be1-87d79ee11f26
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Holiday Name'
+		dataType: string
+		lineageTag: f00f1f5b-54b7-4a56-ba25-0e406dd3378a
+		summarizeBy: none
+		sourceColumn: Holiday Name
+
+	partition 'Public Holiday' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "public_holiday.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"location", type text}, {"date", type date}, {"holiday_name", type text}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"location", "Location"}, {"date", "Date"}, {"holiday_name", "Holiday Name"}})
+				in
+				    Renamed
+

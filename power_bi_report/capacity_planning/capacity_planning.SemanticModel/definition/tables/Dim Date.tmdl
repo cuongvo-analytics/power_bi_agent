@@ -1,0 +1,120 @@
+/// Calendar: one row per day 2026-05-01 to 2027-03-31 with Monday week columns and Period Type (History up to the status week, Plan after). Marked date table.
+table 'Dim Date'
+	lineageTag: 2af8ee4b-e8db-45b9-ad9b-3de383fcdd4f
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		lineageTag: e6d3c36a-4a85-406c-a825-a3882aa461c7
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Date Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b5bbb8e4-da1b-44ca-a71b-f8cad298dcf0
+		summarizeBy: none
+		sourceColumn: Date Key
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 72028587-a1ed-43d9-a86e-6cd8b43b9075
+		summarizeBy: none
+		sourceColumn: Year
+
+	column Quarter
+		dataType: string
+		lineageTag: 9718a1d6-73d5-4133-b1e1-ff4b19de29f8
+		summarizeBy: none
+		sourceColumn: Quarter
+
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 650346e2-ec42-4d3a-8f35-4af5aaa4b66b
+		summarizeBy: none
+		sourceColumn: Month Number
+
+	column Month
+		dataType: string
+		lineageTag: e233b4fc-ead0-46dc-a02b-2393b0f2b46c
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Number'
+
+	column 'Year Month Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3899b554-fbe0-4f6d-a3ac-28304506c05c
+		summarizeBy: none
+		sourceColumn: Year Month Key
+
+	column 'Year Month'
+		dataType: string
+		lineageTag: 1944a9f4-a222-4e71-affb-550d621c19a6
+		summarizeBy: none
+		sourceColumn: Year Month
+		sortByColumn: 'Year Month Key'
+
+	column 'Week Start'
+		dataType: dateTime
+		formatString: dd mmm yy
+		lineageTag: c81c90d4-d4da-4102-b43b-a5f017f4a247
+		summarizeBy: none
+		sourceColumn: Week Start
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'ISO Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: 5adebe66-c32f-461f-96d7-b4b5adc1661b
+		summarizeBy: none
+		sourceColumn: ISO Week
+
+	column 'ISO Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: 935d3e86-0d62-4ee9-9d2c-9765befaac34
+		summarizeBy: none
+		sourceColumn: ISO Year
+
+	column 'Year Week'
+		dataType: string
+		lineageTag: 933aa8e5-50a9-4c8d-8ca0-b2773c0fc040
+		summarizeBy: none
+		sourceColumn: Year Week
+		sortByColumn: 'Week Start'
+
+	column 'Is Working Day'
+		dataType: boolean
+		lineageTag: c36e2ec8-9790-4530-af92-be8954677d44
+		summarizeBy: none
+		sourceColumn: Is Working Day
+
+	column 'Period Type'
+		dataType: string
+		lineageTag: 3bb25834-9f2a-448b-b104-6dce6c538d92
+		summarizeBy: none
+		sourceColumn: Period Type
+
+	partition 'Dim Date' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_date.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"date", type date}, {"date_key", Int64.Type}, {"year", Int64.Type}, {"quarter", type text}, {"month_number", Int64.Type}, {"month", type text}, {"year_month_key", Int64.Type}, {"year_month", type text}, {"week_start", type date}, {"iso_week", Int64.Type}, {"iso_year", Int64.Type}, {"year_week", type text}, {"is_working_day", Int64.Type}, {"period_type", type text}}, "en-US"),
+				    Flags = Table.TransformColumns(Typed, {{"is_working_day", each _ = 1, type logical}}),
+				    Renamed = Table.RenameColumns(Flags, {{"date", "Date"}, {"date_key", "Date Key"}, {"year", "Year"}, {"quarter", "Quarter"}, {"month_number", "Month Number"}, {"month", "Month"}, {"year_month_key", "Year Month Key"}, {"year_month", "Year Month"}, {"week_start", "Week Start"}, {"iso_week", "ISO Week"}, {"iso_year", "ISO Year"}, {"year_week", "Year Week"}, {"is_working_day", "Is Working Day"}, {"period_type", "Period Type"}})
+				in
+				    Renamed
+

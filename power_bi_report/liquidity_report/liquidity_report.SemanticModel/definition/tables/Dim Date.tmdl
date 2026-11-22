@@ -1,0 +1,125 @@
+/// Calendar (one row per day, 2025-11-01 to 2049-12-31) shipped with the source. Marked date table. Period Type: History / As-of / Projection / Beyond horizon.
+table 'Dim Date'
+	lineageTag: 2912d1a5-5be6-428f-9681-0fd58e30a4b2
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: 3b0a844f-bd56-42ec-b6db-5c4e7137bb4c
+		summarizeBy: none
+		sourceColumn: Date
+
+	column 'Date Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9e0e6cb3-b8a1-43d8-9478-837e2b1a29a6
+		summarizeBy: none
+		sourceColumn: Date Key
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 05940dab-520d-426f-8061-6c9d5f1a414e
+		summarizeBy: none
+		sourceColumn: Year
+
+	column Quarter
+		dataType: string
+		lineageTag: 0f6c65f0-91ab-45d1-9f0d-b43b1cd691e6
+		summarizeBy: none
+		sourceColumn: Quarter
+
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b46a738c-a8b6-462a-9192-51a4a7728c28
+		summarizeBy: none
+		sourceColumn: Month Number
+
+	column Month
+		dataType: string
+		lineageTag: 9435f05c-4142-4904-b465-1ee675e6b5f0
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Number'
+
+	column 'Year Month Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6a302aad-5932-461a-a16a-470c03b84b5d
+		summarizeBy: none
+		sourceColumn: Year Month Key
+
+	column 'Year Month'
+		dataType: string
+		lineageTag: 8b33d7c7-e5bf-44c2-aaef-e4d1a54df478
+		summarizeBy: none
+		sourceColumn: Year Month
+		sortByColumn: 'Year Month Key'
+
+	column 'Month End'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 4ba246bc-d24f-4565-99fc-deaad45e74cf
+		summarizeBy: none
+		sourceColumn: Month End
+
+	column 'Is Month End'
+		dataType: int64
+		formatString: 0
+		lineageTag: 9429af63-f328-424b-b51f-a3d0f5259cc8
+		summarizeBy: none
+		sourceColumn: Is Month End
+
+	column 'Week Start'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: eaec0cba-0042-4e32-8c0f-c4b90c519bcc
+		summarizeBy: none
+		sourceColumn: Week Start
+
+	column 'ISO Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: 5d2e0107-e5eb-478c-a5b6-dddee5c67bda
+		summarizeBy: none
+		sourceColumn: ISO Week
+
+	column 'Is Working Day'
+		dataType: int64
+		formatString: 0
+		lineageTag: 391364a3-ad07-451e-a2f9-8bafe25596d3
+		summarizeBy: none
+		sourceColumn: Is Working Day
+
+	column 'Days From Asof'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 98da757f-cdde-48d7-ac1f-ba243a336ef1
+		summarizeBy: none
+		sourceColumn: Days From Asof
+
+	column 'Period Type'
+		dataType: string
+		lineageTag: c28c9ef9-a6df-467c-9e37-b58a0c7fc75c
+		summarizeBy: none
+		sourceColumn: Period Type
+
+	partition 'Dim Date' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_date.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted, {"date", "date_key", "year", "quarter", "month_number", "month", "year_month_key", "year_month", "month_end", "is_month_end", "week_start", "iso_week", "is_working_day", "days_from_asof", "period_type"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"date", type date}, {"date_key", Int64.Type}, {"year", Int64.Type}, {"quarter", type text}, {"month_number", Int64.Type}, {"month", type text}, {"year_month_key", Int64.Type}, {"year_month", type text}, {"month_end", type date}, {"is_month_end", Int64.Type}, {"week_start", type date}, {"iso_week", Int64.Type}, {"is_working_day", Int64.Type}, {"days_from_asof", Int64.Type}, {"period_type", type text}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"date", "Date"}, {"date_key", "Date Key"}, {"year", "Year"}, {"quarter", "Quarter"}, {"month_number", "Month Number"}, {"month", "Month"}, {"year_month_key", "Year Month Key"}, {"year_month", "Year Month"}, {"month_end", "Month End"}, {"is_month_end", "Is Month End"}, {"week_start", "Week Start"}, {"iso_week", "ISO Week"}, {"is_working_day", "Is Working Day"}, {"days_from_asof", "Days From Asof"}, {"period_type", "Period Type"}})
+				in
+				    Renamed
+

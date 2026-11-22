@@ -1,0 +1,87 @@
+relationship 41bd15a5-1312-4af9-bfd3-6b9d1828bcf2
+	fromColumn: 'Fact Bank Position'.Date
+	toColumn: 'Dim Date'.Date
+
+relationship 305b54cf-640e-4b49-a5f1-ba321640cff4
+	fromColumn: 'Fact Bank Position'.'Product Code'
+	toColumn: 'Dim Product'.'Product Code'
+
+relationship 2d6ed3dd-84fa-482d-8a58-4872acb1b1d1
+	fromColumn: 'Fact Bank Position'.'Currency Code'
+	toColumn: 'Dim Currency'.'Currency Code'
+
+relationship e9eb85e1-241a-4643-8d9d-c6a358354a3c
+	fromColumn: 'Fact Bank Position'.'Bucket Key'
+	toColumn: 'Dim Time Bucket'.'Bucket Key'
+
+relationship 1bc23a96-7b3b-4564-a120-7d74e1fb31f8
+	fromColumn: 'Fact Bank Position'.'Contract Id'
+	toColumn: 'Dim Contract'.'Contract Id'
+
+relationship 83da2c4d-137e-4a39-9067-ce7d762c93b6
+	fromColumn: 'Fact HQLA Holding'.Date
+	toColumn: 'Dim Date'.Date
+
+relationship f2f6a665-459f-4611-ad6a-827b6dce70e0
+	fromColumn: 'Fact HQLA Holding'.'Product Code'
+	toColumn: 'Dim Product'.'Product Code'
+
+relationship 5eb6da81-0d9f-46cf-8f2d-bfb4dc02f57c
+	fromColumn: 'Fact HQLA Holding'.'Currency Code'
+	toColumn: 'Dim Currency'.'Currency Code'
+
+relationship 9a27c89b-5773-4555-b962-d66b9d06bdde
+	fromColumn: 'Fact Bank CF Contractual'.Date
+	toColumn: 'Dim Date'.Date
+
+relationship 77d1611d-389e-4eac-83f8-3451b8381a08
+	fromColumn: 'Fact Bank CF Contractual'.'Product Code'
+	toColumn: 'Dim Product'.'Product Code'
+
+relationship 6dde0e8a-17cd-417c-8577-a4a3de8af1d1
+	fromColumn: 'Fact Bank CF Contractual'.'Currency Code'
+	toColumn: 'Dim Currency'.'Currency Code'
+
+relationship 0dcfdd11-13dd-4b10-bd30-2dafac2f5414
+	fromColumn: 'Fact Bank CF Contractual'.'Bucket Key'
+	toColumn: 'Dim Time Bucket'.'Bucket Key'
+
+relationship 69acb2f6-bce2-46e9-82b5-9407196cde34
+	fromColumn: 'Fact Bank CF Stressed'.'Scenario Key'
+	toColumn: 'Dim Scenario'.'Scenario Key'
+
+relationship f82384de-32da-4384-876a-6e2dd34836fc
+	fromColumn: 'Fact Bank CF Stressed'.Date
+	toColumn: 'Dim Date'.Date
+
+relationship 7d468ac9-0beb-4ab3-bb7a-73d0683a7c6b
+	fromColumn: 'Fact Bank CF Stressed'.'Product Code'
+	toColumn: 'Dim Product'.'Product Code'
+
+relationship cef4a882-e7d5-464b-b32b-3582f27a3f20
+	fromColumn: 'Fact Bank CF Stressed'.'Currency Code'
+	toColumn: 'Dim Currency'.'Currency Code'
+
+relationship 70515206-e3b9-4bbb-bd9c-103b7f79fc24
+	fromColumn: 'Fact FX Rate'.Date
+	toColumn: 'Dim Date'.Date
+
+relationship d62a7484-a737-4060-9de5-ba0ab6678fe8
+	fromColumn: 'Fact FX Rate'.'Currency Code'
+	toColumn: 'Dim Currency'.'Currency Code'
+
+relationship 1452707d-62ba-4b45-960d-230448ddc8a4
+	fromColumn: 'Scenario Parameter'.'Scenario Key'
+	toColumn: 'Dim Scenario'.'Scenario Key'
+
+relationship ebd8fe70-5432-480b-9072-72604cc78728
+	fromColumn: 'Ref Liquidity Metrics'.Date
+	toColumn: 'Dim Date'.Date
+
+relationship 967df8e9-fedb-4460-a7bf-94c4be45695d
+	fromColumn: 'Ref Liquidity Metrics'.'Scenario Key'
+	toColumn: 'Dim Scenario'.'Scenario Key'
+
+relationship 09d84b76-bcad-4e08-9b83-905d8b30a06e
+	fromColumn: 'Dim Product'.'Segment Code'
+	toColumn: 'Dim Segment'.'Segment Code'

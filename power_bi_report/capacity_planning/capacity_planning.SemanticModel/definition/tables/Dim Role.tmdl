@@ -1,0 +1,55 @@
+/// Roles: one row per role (6) with the default non-project share and cost rate.
+table 'Dim Role'
+	lineageTag: 26d6387c-cfea-456e-a0a1-f01be76d8a74
+
+	column 'Role Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 6b62b356-53d4-48de-9283-cd832e289f68
+		summarizeBy: none
+		sourceColumn: Role Key
+
+	column 'Role Name'
+		dataType: string
+		lineageTag: 00f9b4ef-3dca-48b7-9e48-3f65623d029f
+		summarizeBy: none
+		sourceColumn: Role Name
+
+	column 'Role Family'
+		dataType: string
+		lineageTag: 0b18c6ce-dd13-4dc0-9a07-acd80a129818
+		summarizeBy: none
+		sourceColumn: Role Family
+
+	column Seniority
+		dataType: string
+		lineageTag: c4aa4c33-3c67-4b7e-a0a4-f79bfe3bd1f0
+		summarizeBy: none
+		sourceColumn: Seniority
+
+	column 'Default Non-project Pct'
+		dataType: double
+		formatString: 0%
+		lineageTag: 85737d78-b467-4058-8028-24d40f5431ca
+		summarizeBy: none
+		sourceColumn: Default Non-project Pct
+
+	column 'Cost Rate'
+		dataType: double
+		formatString: #,0
+		lineageTag: 0c5b48a6-8cf7-439c-90d5-a2d63f93dd7e
+		summarizeBy: none
+		sourceColumn: Cost Rate
+
+	partition 'Dim Role' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_role.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"role_key", Int64.Type}, {"role_name", type text}, {"role_family", type text}, {"seniority", type text}, {"default_non_project_pct", type number}, {"cost_rate", type number}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"role_key", "Role Key"}, {"role_name", "Role Name"}, {"role_family", "Role Family"}, {"seniority", "Seniority"}, {"default_non_project_pct", "Default Non-project Pct"}, {"cost_rate", "Cost Rate"}})
+				in
+				    Renamed
+

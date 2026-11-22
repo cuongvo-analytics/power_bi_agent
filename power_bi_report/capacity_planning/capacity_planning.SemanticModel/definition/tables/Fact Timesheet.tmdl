@@ -1,0 +1,103 @@
+/// Timesheets: one row per person x project x day x activity (history only), hours. Project Key -1 = internal time. Week Start (Monday) is added in Power Query for week-aligned measures.
+table 'Fact Timesheet'
+	lineageTag: 69391fea-7917-46fe-9dc5-13d0bf334b34
+
+	column 'Person Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d956b8f4-5bda-4672-9947-6b0e47356fc8
+		summarizeBy: none
+		sourceColumn: Person Key
+
+	column 'Team Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b692afc1-af89-4d09-97de-3d3ee32be926
+		summarizeBy: none
+		sourceColumn: Team Key
+
+	column 'Role Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: cdedc2a5-dd35-4de7-9237-c028fb1c22ca
+		summarizeBy: none
+		sourceColumn: Role Key
+
+	column 'Project Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5a178777-336b-4217-b8a0-224e75431e3d
+		summarizeBy: none
+		sourceColumn: Project Key
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: ebf5df7c-a650-4163-888d-fbc9e7842ef8
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Week Start'
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: ee9b8b6c-7e56-4a91-be2f-f3151263b102
+		summarizeBy: none
+		sourceColumn: Week Start
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Activity
+		dataType: string
+		lineageTag: 0cec5081-1f8b-4126-a2a6-1225ad5f7f49
+		summarizeBy: none
+		sourceColumn: Activity
+
+	column Hours
+		dataType: double
+		isHidden
+		formatString: #,0.0
+		lineageTag: bd6d2ed2-48e4-4e4c-9697-4ef1ce8e5f56
+		summarizeBy: sum
+		sourceColumn: Hours
+
+	column 'Is Billable'
+		dataType: boolean
+		isHidden
+		lineageTag: 2324ad3b-6c03-4fd1-98ac-a674158be50e
+		summarizeBy: none
+		sourceColumn: Is Billable
+
+	column 'Is Project Time'
+		dataType: boolean
+		isHidden
+		lineageTag: a682b0d9-14f1-4dfb-96ba-1d3307021326
+		summarizeBy: none
+		sourceColumn: Is Project Time
+
+	column 'Approval Status'
+		dataType: string
+		lineageTag: 6d97d080-d48d-46fe-9971-f8a3e56cff71
+		summarizeBy: none
+		sourceColumn: Approval Status
+
+	partition 'Fact Timesheet' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_timesheet.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"person_key", Int64.Type}, {"team_key", Int64.Type}, {"role_key", Int64.Type}, {"project_key", Int64.Type}, {"date", type date}, {"activity", type text}, {"hours", type number}, {"is_billable", Int64.Type}, {"is_project_time", Int64.Type}, {"approval_status", type text}}, "en-US"),
+				    Flags = Table.TransformColumns(Typed, {{"is_billable", each _ = 1, type logical}, {"is_project_time", each _ = 1, type logical}}),
+				    WithWeek = Table.AddColumn(Flags, "week_start", each Date.StartOfWeek([date], Day.Monday), type date),
+				    Renamed = Table.RenameColumns(WithWeek, {{"person_key", "Person Key"}, {"team_key", "Team Key"}, {"role_key", "Role Key"}, {"project_key", "Project Key"}, {"date", "Date"}, {"week_start", "Week Start"}, {"activity", "Activity"}, {"hours", "Hours"}, {"is_billable", "Is Billable"}, {"is_project_time", "Is Project Time"}, {"approval_status", "Approval Status"}})
+				in
+				    Renamed
+

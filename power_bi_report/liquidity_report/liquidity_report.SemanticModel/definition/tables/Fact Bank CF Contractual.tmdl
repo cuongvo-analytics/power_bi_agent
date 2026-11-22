@@ -1,0 +1,67 @@
+/// Contractual cash-flow ladder at the as-of date: one row per date x product x currency x flow type. Sign + in / - out. Non-maturity deposits in O/N.
+table 'Fact Bank CF Contractual'
+	lineageTag: 63a59827-fc53-4846-ae7b-443659c6b4e9
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: 05fea494-edfe-455a-b305-e23fe68d26eb
+		summarizeBy: none
+		sourceColumn: Date
+
+	column 'Product Code'
+		dataType: string
+		isHidden
+		lineageTag: 5154350d-62c7-486a-baea-47be78eac7ec
+		summarizeBy: none
+		sourceColumn: Product Code
+
+	column 'Currency Code'
+		dataType: string
+		isHidden
+		lineageTag: 3e626eeb-a48a-4fe1-bdb1-764442851021
+		summarizeBy: none
+		sourceColumn: Currency Code
+
+	column 'Flow Type'
+		dataType: string
+		lineageTag: 69dc1243-45f6-4e8b-88c7-7deb4993637f
+		summarizeBy: none
+		sourceColumn: Flow Type
+
+	column 'Amount Local'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: a3760e25-d05a-4e9d-b037-4eb4944f3f29
+		summarizeBy: sum
+		sourceColumn: Amount Local
+
+	column 'Amount RC'
+		dataType: decimal
+		isHidden
+		formatString: #,##0.00
+		lineageTag: 24cd8ea8-42c4-4912-8cfe-15b525e92936
+		summarizeBy: sum
+		sourceColumn: Amount RC
+
+	column 'Bucket Key'
+		dataType: string
+		isHidden
+		lineageTag: 9abbdf75-f686-44de-a2ed-8dd352899a1b
+		summarizeBy: none
+		sourceColumn: Bucket Key
+
+	partition 'Fact Bank CF Contractual' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_bank_cf_contractual.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted, {"date", "product_code", "currency_code", "flow_type", "amount_local", "amount_rc", "bucket_key"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"date", type date}, {"product_code", type text}, {"currency_code", type text}, {"flow_type", type text}, {"amount_local", Currency.Type}, {"amount_rc", Currency.Type}, {"bucket_key", type text}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"date", "Date"}, {"product_code", "Product Code"}, {"currency_code", "Currency Code"}, {"flow_type", "Flow Type"}, {"amount_local", "Amount Local"}, {"amount_rc", "Amount RC"}, {"bucket_key", "Bucket Key"}})
+				in
+				    Renamed
+

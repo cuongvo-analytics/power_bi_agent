@@ -1,0 +1,5 @@
+expression DataFolder = "D:\Personal\powerbi_agent\data\liquidity_sample\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: d33e7615-ec64-4d9e-928b-d68b242d4c6b
+
+	annotation PBI_ResultType = Text
+

@@ -1,0 +1,50 @@
+/// Stress multipliers per scenario x LCR group (run-off, inflow, haircut add-on). Looked up per product LCR Group in DAX.
+table 'Scenario Parameter'
+	lineageTag: e1cd8f63-91df-435f-be0e-64ff711d8cba
+
+	column 'Scenario Key'
+		dataType: string
+		isHidden
+		lineageTag: 30a0a791-9c1a-4b24-bf8f-9ccb282c5543
+		summarizeBy: none
+		sourceColumn: Scenario Key
+
+	column 'LCR Group'
+		dataType: string
+		lineageTag: 2c300bc9-7f7d-405d-9a8f-4ae587ed66b6
+		summarizeBy: none
+		sourceColumn: LCR Group
+
+	column 'Runoff Multiplier'
+		dataType: double
+		formatString: 0.0000
+		lineageTag: 5661fd86-6fb1-45e7-a065-1823a6f4e6cf
+		summarizeBy: none
+		sourceColumn: Runoff Multiplier
+
+	column 'Inflow Multiplier'
+		dataType: double
+		formatString: 0.0000
+		lineageTag: a84185fe-c626-432b-8104-c86f6ff136b8
+		summarizeBy: none
+		sourceColumn: Inflow Multiplier
+
+	column 'Haircut Addon'
+		dataType: double
+		formatString: 0.0%
+		lineageTag: c9f82c1c-72e0-40b7-9e73-8a7f53f1d5d5
+		summarizeBy: none
+		sourceColumn: Haircut Addon
+
+	partition 'Scenario Parameter' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "scenario_parameter.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted, {"scenario_key", "lcr_group", "runoff_multiplier", "inflow_multiplier", "haircut_addon"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"scenario_key", type text}, {"lcr_group", type text}, {"runoff_multiplier", type number}, {"inflow_multiplier", type number}, {"haircut_addon", type number}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"scenario_key", "Scenario Key"}, {"lcr_group", "LCR Group"}, {"runoff_multiplier", "Runoff Multiplier"}, {"inflow_multiplier", "Inflow Multiplier"}, {"haircut_addon", "Haircut Addon"}})
+				in
+				    Renamed
+

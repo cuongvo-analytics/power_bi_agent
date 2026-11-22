@@ -1,0 +1,66 @@
+/// Maturity ladder buckets (O/N ... >5Y, Non-maturity).
+table 'Dim Time Bucket'
+	lineageTag: 8c28ba57-27ea-4802-b492-93dab60befe4
+
+	column 'Bucket Key'
+		dataType: string
+		isHidden
+		lineageTag: e08614e8-1b1e-453f-82ee-10b5c7f69892
+		summarizeBy: none
+		sourceColumn: Bucket Key
+
+	column 'Bucket Label'
+		dataType: string
+		lineageTag: 2e95b71e-f64b-4d06-a1b3-76e518456a64
+		summarizeBy: none
+		sourceColumn: Bucket Label
+		sortByColumn: 'Sort Order'
+
+	column 'Sort Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9366cb39-c8f0-421a-a82d-a2db346651cb
+		summarizeBy: none
+		sourceColumn: Sort Order
+
+	column 'Days From'
+		dataType: double
+		formatString: 0
+		lineageTag: e43cba1f-127d-4ee1-ae82-4a72def919ef
+		summarizeBy: none
+		sourceColumn: Days From
+
+	column 'Days To'
+		dataType: double
+		formatString: 0
+		lineageTag: 81ec6030-c355-4216-9882-ecc2dce8546f
+		summarizeBy: none
+		sourceColumn: Days To
+
+	column 'In LCR 30D'
+		dataType: int64
+		formatString: 0
+		lineageTag: 3c02d051-4a1a-4533-a350-5accc27b6b52
+		summarizeBy: none
+		sourceColumn: In LCR 30D
+
+	column 'In 1Y'
+		dataType: int64
+		formatString: 0
+		lineageTag: 82f73a3a-5a0f-4ed8-a527-ecd546770296
+		summarizeBy: none
+		sourceColumn: In 1Y
+
+	partition 'Dim Time Bucket' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "dim_time_bucket.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted, {"bucket_key", "bucket_label", "sort_order", "days_from", "days_to", "in_lcr_30d", "in_1y"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"bucket_key", type text}, {"bucket_label", type text}, {"sort_order", Int64.Type}, {"days_from", type number}, {"days_to", type number}, {"in_lcr_30d", Int64.Type}, {"in_1y", Int64.Type}}, "en-US"),
+				    Renamed = Table.RenameColumns(Typed, {{"bucket_key", "Bucket Key"}, {"bucket_label", "Bucket Label"}, {"sort_order", "Sort Order"}, {"days_from", "Days From"}, {"days_to", "Days To"}, {"in_lcr_30d", "In LCR 30D"}, {"in_1y", "In 1Y"}})
+				in
+				    Renamed
+
