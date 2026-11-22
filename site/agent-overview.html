@@ -56,6 +56,9 @@ section { padding-block: 56px 8px; display: grid; gap: 20px; }
 .hero h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 700; letter-spacing: -.01em; }
 .hero p { margin: 0; font-size: clamp(1.05rem, 2vw, 1.3rem); opacity: .92; max-width: 46ch; }
 .hero .eyebrow { color: var(--sc-green); }
+.brand { display: flex; align-items: center; gap: 16px; }
+.logo-tile { width: 64px; height: 64px; flex: none; border-radius: 14px; background: #FFFFFF; overflow: hidden; display: block; }
+.logo-tile img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
 .mini-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .pill { display: inline-flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.22); font-weight: 600; }
 .pill svg { width: 22px; height: 22px; flex: none; }
@@ -129,7 +132,10 @@ footer { padding-block: 40px 48px; color: var(--muted); font-size: .85rem; }
 
 <header class="hero">
   <div class="wrap">
-    <span class="eyebrow">Claude Code agent · Power BI</span>
+    <div class="brand">
+      <span class="logo-tile"><img src="Standard-Chartered-logo-new.png" alt="Standard Chartered logo" width="500" height="638"></span>
+      <span class="eyebrow">Claude Code agent · Power BI</span>
+    </div>
     <h1>Power BI Agent</h1>
     <p>Ask in plain language. Get a validated, on-brand Power BI report.</p>
     <div class="mini-flow" aria-label="Your data, then the agent, then a Power BI report">
