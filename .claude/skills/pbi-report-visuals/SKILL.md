@@ -69,4 +69,5 @@ description: Design and create Power BI report pages and visuals (PBIR visual.js
   - table
   - slicer
 - `assets/finance-theme.json`: the report theme.
+- `pbi-project-capacity/references/pages.md`: portfolio, schedule, earned value, sprint, flow, capacity vs demand and utilisation pages (same theme, plus RAG amber `#D97706`).
 - `assets/page-layouts.md`: grid coordinates for standard page layouts.

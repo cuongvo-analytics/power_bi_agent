@@ -1,5 +1,8 @@
-/// Fallback calendar (the liquidity dataset ships dim_date - use that when available). Covers history,
-/// the projection horizon and the contractual tail. Fiscal year is named after the calendar year in which it ends.
+/// Fallback calendar (use the source's own calendar when it ships one). Covers history,
+/// the projection horizon and the contractual tail. Week columns (Monday Week Start, ISO week) serve weekly
+/// capacity / EVM facts. For a project-only model, replace the treasury date bounds in the partition with the
+/// min/max of the project facts (e.g. Fact Timesheet[Date], Fact Demand[Week Start]).
+/// Public holidays: set Is Working Day in Power Query or a holiday merge. Fiscal year is named after the calendar year in which it ends.
 table 'Dim Date'
 	dataCategory: Time
 	lineageTag: <guid>
@@ -135,6 +138,45 @@ table 'Dim Date'
 		isNameInferred
 		sourceColumn: [Is Month End]
 
+	column 'Week Start'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: <guid>
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Week Start]
+
+	column 'ISO Week'
+		dataType: int64
+		formatString: 0
+		lineageTag: <guid>
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ISO Week]
+
+	column 'ISO Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: <guid>
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ISO Year]
+
+	column 'Year Week'
+		dataType: string
+		lineageTag: <guid>
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Week]
+		sortByColumn: 'Week Start'
+
+	column 'Is Working Day'
+		dataType: boolean
+		lineageTag: <guid>
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Is Working Day]
+
 	column 'Days From Asof'
 		dataType: int64
 		isHidden
@@ -197,6 +239,11 @@ table 'Dim Date'
 				        "Fiscal Period", "P" & FORMAT ( MOD ( MONTH ( [Date] ) - _FyStart, 12 ) + 1, "00" ),
 				        "Fiscal Period Key", MOD ( MONTH ( [Date] ) - _FyStart, 12 ) + 1,
 				        "Is Month End", [Date] = EOMONTH ( [Date], 0 ),
+				        "Week Start", [Date] - WEEKDAY ( [Date], 2 ) + 1,
+				        "ISO Week", WEEKNUM ( [Date], 21 ),
+				        "ISO Year", YEAR ( [Date] - WEEKDAY ( [Date], 2 ) + 4 ),
+				        "Year Week", FORMAT ( YEAR ( [Date] - WEEKDAY ( [Date], 2 ) + 4 ), "0000" ) & "-W" & FORMAT ( WEEKNUM ( [Date], 21 ), "00" ),
+				        "Is Working Day", WEEKDAY ( [Date], 2 ) <= 5,
 				        "Days From Asof", INT ( [Date] - _AsOf ),
 				        "Period Type", SWITCH ( TRUE (), [Date] < _AsOf, "History", [Date] = _AsOf, "As-of",
 				                                [Date] <= _AsOf + 365, "Projection", "Contractual tail" )

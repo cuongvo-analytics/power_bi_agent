@@ -62,3 +62,4 @@ This skill explains the *why*, and how to extend the model or map real sources o
 - `references/treasury-liquidity-patterns.md`: core concepts, conformed dimensions, bank and corporate treasury table patterns, LCR/NSFR attributes for real sources, forecast vintages, FX rules, KPI → tables map.
 - `templates/date-table.tmdl`: fallback calendar for sources without one.
 - `templates/model-spec.md`: the proposal template.
+- Project management and capacity models (tasks, EVM, work items, sprints, capacity, demand, timesheets): `pbi-project-capacity/references/model-patterns.md`.

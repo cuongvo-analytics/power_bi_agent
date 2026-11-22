@@ -56,6 +56,7 @@ The partition goes in each `tables/<Table>.tmdl` (`partition <Table> = m`, see `
 8. **Helper queries:** staging queries such as a CSV folder combine or a CoA lookup are shared expressions in `expressions.tmdl`. They don't load to the model: TMDL expressions without a table partition are not loaded.
 
 ## References
+- `pbi-project-capacity/references/source-connectors.md`: Jira (CSV and REST `search/jql`), Azure DevOps Analytics OData, MS Project / Project Server, Planner (Dataverse) and Excel resource plans.
 - `references/source-patterns.md`: copy-ready M for:
   - CSV file / CSV folder
   - Excel table or sheet

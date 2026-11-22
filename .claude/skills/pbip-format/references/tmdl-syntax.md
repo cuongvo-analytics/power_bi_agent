@@ -161,7 +161,7 @@ relationship <guid>
 
 ## Parameters / shared queries (expressions.tmdl)
 ```tmdl
-expression DataFolder = "D:\Personal\powerbi\bi_report_using_agent\data\liquidity\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+expression DataFolder = "D:\Personal\powerbi\bi_report_using_agent\data\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
 	lineageTag: <guid>
 
 expression SqlServer = "sql-prod-01" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
