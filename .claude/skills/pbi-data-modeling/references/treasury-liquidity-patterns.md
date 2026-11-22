@@ -1,11 +1,6 @@
 # Treasury & liquidity model patterns (bank + corporate)
 
-This is aligned with the dataset produced by the `liquidity-data-simulator` agent (`data/liquidity/`).
-- Import list, friendly names and relationships: `liquidity-powerbi/references/model-design.md`.
-- Column notes and as-of date: `data/liquidity/README.md`.
-- Methodology: `liquidity-risk-methodology`.
-
-Friendly names below follow the model-design mapping (snake_case → Title Case, acronyms RC/LCR/NSFR/HQLA kept; RC = reporting currency).
+Friendly names below follow the convention (snake_case → Title Case, acronyms RC/LCR/NSFR/HQLA kept; RC = reporting currency).
 
 ## 1. Core concepts to fix before modeling
 | Concept | Rule |
@@ -15,7 +10,7 @@ Friendly names below follow the model-design mapping (snake_case → Title Case,
 | **Sign convention** | Cash flows: **+ received, − paid** (bank and corporate). Balances are **positive**; the `Side Sign` on `Dim Product` (+1 asset / −1 liability, equity, off-balance) gives direction. There is no debit/credit `Report Sign`. |
 | **Snapshot vs flow** | Snapshot tables (positions, HQLA, cash balance) are semi-additive: pick one date (`[Reporting Date]`), never sum over time. Flow tables are additive over time. |
 | **Scenario** | `Dim Scenario` = **stress scenarios**: ACT (history), BASE, IDIO, MARKET, COMBINED, REVERSE, with `Scenario Type` actual / baseline / stress / reverse. Planning versions (Budget, Reforecast) are **not** scenarios. If they are ever needed, add a separate `Dim Version`. |
-| **Currency** | Every amount exists as `… Local` and `… RC` (reporting currency: `meta.reporting_currency`, USD in `default`, EUR in `eba_sls`). Report in RC. Per-currency views filter `Dim Currency`. |
+| **Currency** | Every amount exists as `… Local` and `… RC` (reporting currency). Report in RC. Per-currency views filter `Dim Currency`. |
 
 ## 2. Conformed dimensions
 | Dimension | Key | Used by | Notes |
@@ -98,10 +93,10 @@ Convert in the source or in Power Query. The dataset already provides `… RC` c
 ## 7. KPI → required tables
 | KPI | Tables | Measures in |
 |---|---|---|
-| LCR (regulatory + stressed) | HQLA Holding, Bank Position, Dim Product, Scenario Parameter | `liquidity-powerbi/references/liquidity-measures.md` |
-| NSFR | Bank Position, Dim Product | liquidity-measures |
-| Maturity gap (contractual / behavioural) | Bank CF Contractual, Bank CF Stressed, Dim Time Bucket | liquidity-measures |
-| CBC, survival horizon | HQLA Holding, Bank CF Stressed | liquidity-measures |
+| LCR (regulatory + stressed) | HQLA Holding, Bank Position, Dim Product, Scenario Parameter | not yet in library |
+| NSFR | Bank Position, Dim Product | not yet in library |
+| Maturity gap (contractual / behavioural) | Bank CF Contractual, Bank CF Stressed, Dim Time Bucket | not yet in library |
+| CBC, survival horizon | HQLA Holding, Bank CF Stressed | not yet in library |
 | Loan-to-deposit, CASA / stable funding, wholesale reliance, concentration | Bank Position, Dim Product, Dim Contract | `pbi-dax-measures/references/treasury-liquidity-measures.md` |
 | NII, NIM | Bank CF History (interest flow types), Bank Position | treasury-liquidity-measures |
 | Corporate cash, headroom, days to breach, weeks of cover | Corp Cash Balance, Corp CF Forecast, Dim Facility | treasury-liquidity-measures + liquidity-measures §L6 |

@@ -9,11 +9,10 @@ description: Write, organise and document DAX measures for treasury and liquidit
 1. Read the model first: tables, columns, relationships and existing measures. Reuse base measures; never define a measure twice.
 2. Build in layers:
    - **Foundation**: dates & scenario, snapshot balances, cash flows (`references/treasury-liquidity-measures.md`)
-   - **Regulatory & stress**: HQLA/LCR, NSFR, gap, CBC/survival, what-if (`liquidity-powerbi/references/liquidity-measures.md`)
    - **Comparisons**: vs BASE, time intelligence on flows, as measures or as guarded calc groups (`references/calc-groups.md`)
 3. Propose the list (folder · name · plain-English definition · sign · format) and get approval.
 4. Write the measures into `tables/_Measures.tmdl` (see `pbip-format/references/tmdl-syntax.md`).
-5. Validate with `pbip-format/scripts/validate_pbip.py`. Reconcile against `Ref Liquidity Metrics` (generator reference values) and tell the user the differences.
+5. Validate with `pbip-format/scripts/validate_pbip.py`.
 
 ## Rules
 - **Display folders** in `_Measures`:
@@ -24,7 +23,6 @@ description: Write, organise and document DAX measures for treasury and liquidit
   - `5. Bank Liquidity`
   - `6. Corporate Treasury`
   - `9. Helpers` (hidden)
-  - plus the `L2–L9` folders from liquidity-powerbi
 - **Documentation:** every measure has a `///` description stating the definition, the **sign** (+ in / − out, or "positive balance"), and the view (contractual, behavioural or stressed).
 - **Sign convention:** cash flows are + received / − paid; balances are positive. A higher signed cash amount is better. **Don't** invert variance by account type, which is P&L logic and doesn't apply here. Invert only for measures shown as positive outflows, such as `Stressed 30D Net Outflow`.
 - **Snapshots:** bank balances use `[Reporting Date]` and corporate cash uses `[Corp Balance Date]`, both with `REMOVEFILTERS('Dim Date')`. **Never** use `LASTDATE('Dim Date'[Date])`: the calendar runs to the 2050s contractual tail, so unfiltered cards go blank. Never `SUM` balances across dates.
@@ -55,4 +53,3 @@ description: Write, organise and document DAX measures for treasury and liquidit
 ## References
 - `references/treasury-liquidity-measures.md`: the foundation library (dates, balances, flows, variance, flow TI, bank funding KPIs, corporate treasury KPIs, helpers).
 - `references/calc-groups.md`: Time Intelligence (flows only, guarded), Stress Comparison (vs BASE), Currency View.
-- `liquidity-powerbi/references/liquidity-measures.md`: HQLA/LCR, NSFR, gap, CBC/survival, what-if, corporate headroom.

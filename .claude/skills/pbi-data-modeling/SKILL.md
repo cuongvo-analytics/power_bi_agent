@@ -1,20 +1,15 @@
 ---
 name: pbi-data-modeling
-description: Design or change a Power BI semantic model as a star schema for treasury and liquidity data (bank ALM + corporate treasury) - as-of date, history vs projection, contractual / behavioural / stressed cash-flow facts, semi-additive snapshots (positions, HQLA, cash balances), stress-scenario dimension, maturity buckets, Basel LCR/NSFR attributes, facilities, invoices and FX rules. Aligned with the liquidity-data-simulator dataset in data/liquidity. Use before writing tables or relationships in TMDL, or when the user asks to "define the data model".
+description: Design or change a Power BI semantic model as a star schema for treasury and liquidity data (bank ALM + corporate treasury) - as-of date, history vs projection, contractual / behavioural / stressed cash-flow facts, semi-additive snapshots (positions, HQLA, cash balances), stress-scenario dimension, maturity buckets, Basel LCR/NSFR attributes, facilities, invoices and FX rules. Use before writing tables or relationships in TMDL, or when the user asks to "define the data model".
 ---
 
 # Data modeling (treasury & liquidity)
-
-The default source is the synthetic dataset in `data/liquidity/`:
-- Read its `README.md` for keys, grain and the as-of date.
-- Use `liquidity-powerbi/references/model-design.md` for the import list, friendly names and relationships.
 
 This skill explains the *why*, and how to extend the model or map real sources onto it.
 
 ## Workflow
 1. **Inventory the sources.**
-   - Synthetic dataset: read `data/liquidity/README.md`.
-   - Real data: profile with `pbi-power-query/scripts/profile_data.py`, or read the SQL DDL.
+   - Profile with `pbi-power-query/scripts/profile_data.py`, or read the SQL DDL.
 2. **Fix the core concepts first** (`references/treasury-liquidity-patterns.md` §1):
    - as-of date and projection horizon
    - which cash-flow view each source represents (contractual / behavioural / stressed)
@@ -29,7 +24,7 @@ This skill explains the *why*, and how to extend the model or map real sources o
 5. **Define keys.** Use the dataset's codes as keys (`… Code`, `… Key`, `… Id`), unique and non-blank. Map orphan fact keys to an Unknown member in Power Query.
 6. **Define relationships:** dimension (1) → fact (*), single direction, one active path. Two specific rules:
    - Don't relate `Dim Contract` to `Dim Product`, because the facts already carry `Product Code` (ambiguous path).
-   - Reference tables (`Ref Liquidity Metrics`, `Ref Liquidity Gap`) are for reconciliation only.
+   - Reference tables (reconciliation values from the source, if any) are for reconciliation only.
 7. **Date table:**
    - Use the dataset's `dim_date`. It spans history start to the last contractual flow (~26 years) and has `Days From Asof` and `Period Type`.
    - Mark it as the date table on `Date`.

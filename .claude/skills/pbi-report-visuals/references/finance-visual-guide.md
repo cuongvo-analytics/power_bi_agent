@@ -1,7 +1,5 @@
 # Finance & banking visual guide
 
-> **Liquidity / treasury reports** (LCR, NSFR, maturity ladder, survival horizon, corporate cash forecast): use `liquidity-powerbi/references/liquidity-pages.md`. The pages below are for P&L-style finance reporting.
-
 ## Which visual for which question
 | Question | Visual | Binding |
 |---|---|---|

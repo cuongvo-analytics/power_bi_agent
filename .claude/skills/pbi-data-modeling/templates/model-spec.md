@@ -11,7 +11,7 @@ _Status: DRAFT, awaiting approval · Date: <yyyy-mm-dd>_
 | Topic | Assumption |
 |---|---|
 | As-of date & horizon | <2026-09-30>; daily projection 365 days; contractual tail to final maturity |
-| Data | Synthetic dataset `data/liquidity` (seed <42>) / real source <…> |
+| Data | <source: CSV/Excel files in data/ / SQL database> |
 | Sign convention | Cash flows + received / − paid; balances positive (`Side Sign` gives direction) |
 | Cash-flow views | Contractual (`Fact Bank CF Contractual`), behavioural = BASE, stressed = other scenarios (`Fact Bank CF Stressed`) |
 | Scenarios | ACT, BASE, IDIO, MARKET, COMBINED, REVERSE (stress only; no budget versions) |
@@ -23,7 +23,7 @@ _Status: DRAFT, awaiting approval · Date: <yyyy-mm-dd>_
 ## 3. Sources
 | Source | Type | Rows | Used for |
 |---|---|---|---|
-| data/liquidity/fact_bank_position.csv | CSV | 134k | Fact Bank Position |
+| data/<file>.csv | CSV | <rows> | Fact <Subject> |
 
 ## 4. Tables
 | Table | Kind | Grain (one row per …) | Key | Source / transform |
@@ -71,7 +71,7 @@ _Status: DRAFT, awaiting approval · Date: <yyyy-mm-dd>_
 ```
 
 ## 9. Reconciliation
-DAX vs `Ref Liquidity Metrics` for LCR %, NSFR %, CBC and Survival Days per scenario; tolerance < 0.1%.
+DAX vs <source reference values / regulatory return> for <key metrics> per scenario; tolerance < 0.1%.
 
 ## 10. Open questions
 1. …

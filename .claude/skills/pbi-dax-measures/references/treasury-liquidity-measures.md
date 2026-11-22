@@ -1,13 +1,6 @@
 # Treasury & liquidity measure library (foundation)
 
-This is the foundation layer for the liquidity dataset (`data/liquidity`), with names as in `liquidity-powerbi/references/model-design.md`.
-
-The **regulatory and stress metrics** are in `liquidity-powerbi/references/liquidity-measures.md` and build on the measures here. They aren't repeated:
-- HQLA, LCR, NSFR
-- maturity gap
-- CBC, survival
-- what-if
-- corporate headroom / days to breach
+This is the foundation layer for treasury and liquidity models. Regulatory and stress metrics (HQLA, LCR, NSFR, maturity gap, CBC, survival, what-if, corporate headroom) are not covered here.
 
 Each measure in TMDL needs a `///` description (definition + sign), `formatString`, `displayFolder` and `lineageTag`.
 
@@ -154,7 +147,6 @@ Avg Interest Earning Assets =
 CALCULATE ( [Average Balance], 'Dim Product'[Side] = "Asset", NOT 'Dim Product'[Category] IN { "Other", "Cash & Reserves" } )
 NIM % = DIVIDE ( [Net Interest Income] * [Annualisation Factor], [Avg Interest Earning Assets] )
 ```
-Regulatory and stress metrics (`LCR %`, `NSFR %`, `HQLA Stock`, `CBC`, `Survival Days`, gaps) are in `liquidity-powerbi/references/liquidity-measures.md`.
 
 ## 7. Corporate treasury KPIs (folder `6. Corporate Treasury`)
 ```dax
