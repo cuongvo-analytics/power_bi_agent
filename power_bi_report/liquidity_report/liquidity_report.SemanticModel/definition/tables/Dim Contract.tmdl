@@ -43,12 +43,16 @@ table 'Dim Contract'
 		summarizeBy: none
 		sourceColumn: Start Date
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column 'Maturity Date'
 		dataType: dateTime
 		formatString: yyyy-mm-dd
 		lineageTag: 7e0a9884-c9f2-4f9d-922c-da06946d6043
 		summarizeBy: none
 		sourceColumn: Maturity Date
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column 'Interest Rate'
 		dataType: double

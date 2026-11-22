@@ -85,7 +85,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Contractual net cash flow by product category × maturity bucket (USD bn, + in / − out)'"
+                  "Value": "'Contractual net cash flow by product category × maturity bucket (USD, + in / − out)'"
                 }
               }
             }

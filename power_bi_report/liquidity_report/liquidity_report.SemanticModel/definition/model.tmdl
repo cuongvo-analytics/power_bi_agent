@@ -12,6 +12,8 @@ annotation __PBI_TimeIntelligenceEnabled = 0
 
 annotation PBI_ProTooling = ["DevMode"]
 
+annotation PBI_QueryOrder = ["Dim Date","Dim Scenario","Dim Currency","Dim Segment","Dim Product","Dim Time Bucket","Dim Contract","Fact Bank Position","Fact HQLA Holding","Fact Bank CF Contractual","Fact Bank CF Stressed","Fact FX Rate","Scenario Parameter","Ref Liquidity Metrics","DataFolder"]
+
 ref table _Measures
 ref table 'Dim Date'
 ref table 'Dim Scenario'

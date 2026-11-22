@@ -85,7 +85,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Outflows 30D by LCR group × scenario (USD bn)'"
+                  "Value": "'Outflows 30D by LCR group × scenario (USD)'"
                 }
               }
             }

@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "da4175184dcf4c548d18",
   "position": {
     "x": 24,
     "y": 684,
     "z": 10000,
-    "width": 1872,
     "height": 372,
+    "width": 1872,
     "tabOrder": 10000
   },
   "visual": {
@@ -215,7 +215,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'LCR build-up by month-end (USD bn), selected scenario; reconciliation vs reference'"
+                  "Value": "'LCR build-up by month-end (USD), selected scenario; reconciliation vs reference'"
                 }
               }
             }
@@ -285,7 +285,120 @@
               }
             }
           ]
-        }
+        },
+        "howCreated": "User"
+      },
+      {
+        "name": "c22fc64f9a599e3b8522",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Date"
+              }
+            },
+            "Property": "Year Month"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "fad90a1ef5e7554ba715",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "HQLA Stock"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ca21f15e3f2644243749",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Outflows 30D"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "cdb648e8c886e95ab028",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Inflows Capped"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "4088961915ff29691014",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Net Outflows 30D"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "16db6a05c9f4b3e16bbb",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "LCR %"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "08239afe3afce4700ab2",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Ref LCR %"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "32459fc27e30c61b6554",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "LCR Diff vs Ref"
+          }
+        },
+        "type": "Advanced"
       }
     ]
   }

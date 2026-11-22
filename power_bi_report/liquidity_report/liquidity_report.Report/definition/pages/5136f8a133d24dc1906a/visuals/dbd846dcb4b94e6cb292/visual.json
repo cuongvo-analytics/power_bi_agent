@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "dbd846dcb4b94e6cb292",
   "position": {
     "x": 496,
     "y": 102,
     "z": 5000,
-    "width": 454,
     "height": 156,
+    "width": 454,
     "tabOrder": 5000
   },
   "visual": {
@@ -71,5 +71,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "081280cb0df02c303ea8",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "HQLA Stock"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

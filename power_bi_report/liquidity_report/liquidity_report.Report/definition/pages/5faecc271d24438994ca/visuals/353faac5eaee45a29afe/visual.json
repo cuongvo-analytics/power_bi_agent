@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "353faac5eaee45a29afe",
   "position": {
     "x": 966,
     "y": 684,
     "z": 10000,
-    "width": 930,
     "height": 372,
+    "width": 930,
     "tabOrder": 10000
   },
   "visual": {
@@ -72,7 +72,8 @@
                 }
               },
               "queryRef": "_Measures.Security Market Value",
-              "nativeQueryRef": "Security Market Value"
+              "nativeQueryRef": "Security Market Value",
+              "active": false
             },
             {
               "field": {
@@ -122,8 +123,7 @@
             },
             "direction": "Descending"
           }
-        ],
-        "isDefaultSort": false
+        ]
       }
     },
     "visualContainerObjects": {
@@ -140,7 +140,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Top 10 securities by market value at reporting date (USD bn)'"
+                  "Value": "'Top 10 securities by market value at reporting date (USD)'"
                 }
               }
             }

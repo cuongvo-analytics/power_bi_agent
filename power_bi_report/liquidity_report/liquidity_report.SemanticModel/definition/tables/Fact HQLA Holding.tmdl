@@ -10,6 +10,8 @@ table 'Fact HQLA Holding'
 		summarizeBy: none
 		sourceColumn: Date
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column 'Security Id'
 		dataType: string
 		isHidden

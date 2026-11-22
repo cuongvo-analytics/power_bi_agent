@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "aa3c71b6599c46a9bc81",
   "position": {
     "x": 24,
     "y": 102,
     "z": 3000,
-    "width": 454,
     "height": 156,
+    "width": 454,
     "tabOrder": 3000
   },
   "visual": {
@@ -71,5 +71,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "c917cbcec999861414b4",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "HQLA Market Value"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

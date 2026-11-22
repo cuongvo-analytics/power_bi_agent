@@ -17,6 +17,8 @@ table 'Fact Bank CF Stressed'
 		summarizeBy: none
 		sourceColumn: Date
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column 'Product Code'
 		dataType: string
 		isHidden

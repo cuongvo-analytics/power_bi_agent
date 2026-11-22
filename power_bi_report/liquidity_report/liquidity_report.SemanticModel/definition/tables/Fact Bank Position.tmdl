@@ -10,6 +10,8 @@ table 'Fact Bank Position'
 		summarizeBy: none
 		sourceColumn: Date
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column 'Contract Id'
 		dataType: string
 		isHidden

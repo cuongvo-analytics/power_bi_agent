@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "fb8afabd3ba14699b49e",
   "position": {
     "x": 24,
     "y": 684,
     "z": 9000,
-    "width": 924,
     "height": 372,
+    "width": 924,
     "tabOrder": 9000
   },
   "visual": {
@@ -82,6 +82,21 @@
         }
       }
     },
+    "objects": {
+      "tree": [
+        {
+          "properties": {
+            "effectiveBarsPerLevel": {
+              "expr": {
+                "Literal": {
+                  "Value": "3L"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
     "visualContainerObjects": {
       "title": [
         {
@@ -105,5 +120,65 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "5b404d4ee031b987aabe",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Outflows 30D"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "8276b9c0559c5cea2dea",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Product"
+              }
+            },
+            "Property": "LCR Group"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "42783fa6cf61cf078da7",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Segment"
+              }
+            },
+            "Property": "Segment Name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "cb38ffc14961cdff8013",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim Product"
+              }
+            },
+            "Property": "Product Name"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

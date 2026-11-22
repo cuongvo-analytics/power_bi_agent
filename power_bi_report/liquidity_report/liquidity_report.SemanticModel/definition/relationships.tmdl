@@ -85,3 +85,4 @@ relationship 967df8e9-fedb-4460-a7bf-94c4be45695d
 relationship 09d84b76-bcad-4e08-9b83-905d8b30a06e
 	fromColumn: 'Dim Product'.'Segment Code'
 	toColumn: 'Dim Segment'.'Segment Code'
+

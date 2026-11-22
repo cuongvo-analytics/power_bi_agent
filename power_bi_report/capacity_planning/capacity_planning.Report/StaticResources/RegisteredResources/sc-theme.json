@@ -23,10 +23,26 @@
   "minimum": "#EAF3FE",
   "null": "#E5E7EB",
   "textClasses": {
-    "callout": { "fontSize": 24, "fontFace": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif", "color": "#020B43" },
-    "title": { "fontSize": 11, "fontFace": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif", "color": "#020B43" },
-    "header": { "fontSize": 12, "fontFace": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif", "color": "#020B43" },
-    "label": { "fontSize": 9, "fontFace": "'SC Prosper Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif", "color": "#525355" }
+    "callout": {
+      "fontSize": 24,
+      "fontFace": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
+      "color": "#020B43"
+    },
+    "title": {
+      "fontSize": 11,
+      "fontFace": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
+      "color": "#020B43"
+    },
+    "header": {
+      "fontSize": 12,
+      "fontFace": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
+      "color": "#020B43"
+    },
+    "label": {
+      "fontSize": 9,
+      "fontFace": "'SC Prosper Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
+      "color": "#525355"
+    }
   },
   "visualStyles": {
     "*": {
@@ -34,7 +50,11 @@
         "title": [
           {
             "show": true,
-            "fontColor": { "solid": { "color": "#020B43" } },
+            "fontColor": {
+              "solid": {
+                "color": "#020B43"
+              }
+            },
             "fontSize": 11,
             "fontFamily": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
             "bold": true,
@@ -42,18 +62,46 @@
           }
         ],
         "background": [
-          { "show": true, "color": { "solid": { "color": "#FFFFFF" } }, "transparency": 0 }
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "transparency": 0
+          }
         ],
         "border": [
-          { "show": true, "color": { "solid": { "color": "#E2E8F0" } }, "radius": 6 }
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#E2E8F0"
+              }
+            },
+            "radius": 6
+          }
         ],
-        "dropShadow": [{ "show": false }],
+        "dropShadow": [
+          {
+            "show": false
+          }
+        ],
         "valueAxis": [
           {
             "gridlineShow": true,
-            "gridlineColor": { "solid": { "color": "#EDF2F7" } },
+            "gridlineColor": {
+              "solid": {
+                "color": "#EDF2F7"
+              }
+            },
             "gridlineStyle": "dotted",
-            "labelColor": { "solid": { "color": "#525355" } },
+            "labelColor": {
+              "solid": {
+                "color": "#525355"
+              }
+            },
             "fontFamily": "'SC Prosper Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
             "fontSize": 9
           }
@@ -61,7 +109,11 @@
         "categoryAxis": [
           {
             "gridlineShow": false,
-            "labelColor": { "solid": { "color": "#525355" } },
+            "labelColor": {
+              "solid": {
+                "color": "#525355"
+              }
+            },
             "fontFamily": "'SC Prosper Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
             "fontSize": 9
           }
@@ -70,7 +122,11 @@
           {
             "show": true,
             "position": "Top",
-            "labelColor": { "solid": { "color": "#525355" } },
+            "labelColor": {
+              "solid": {
+                "color": "#525355"
+              }
+            },
             "fontFamily": "'SC Prosper Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
             "fontSize": 9
           }
@@ -79,17 +135,50 @@
     },
     "page": {
       "*": {
-        "background": [{ "color": { "solid": { "color": "#F5F7FA" } }, "transparency": 0 }],
-        "outspace": [{ "color": { "solid": { "color": "#F5F7FA" } } }]
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F5F7FA"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "outspace": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F5F7FA"
+              }
+            }
+          }
+        ]
       }
     },
     "card": {
       "*": {
         "labels": [
-          { "color": { "solid": { "color": "#020B43" } }, "fontSize": 22, "fontFamily": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif" }
+          {
+            "color": {
+              "solid": {
+                "color": "#020B43"
+              }
+            },
+            "fontSize": 22,
+            "fontFamily": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif"
+          }
         ],
         "categoryLabels": [
-          { "show": true, "color": { "solid": { "color": "#525355" } }, "fontSize": 9 }
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#525355"
+              }
+            },
+            "fontSize": 9
+          }
         ]
       }
     },
@@ -97,36 +186,78 @@
       "*": {
         "columnHeaders": [
           {
-            "fontColor": { "solid": { "color": "#FFFFFF" } },
-            "backColor": { "solid": { "color": "#020B43" } },
+            "fontColor": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "backColor": {
+              "solid": {
+                "color": "#020B43"
+              }
+            },
             "fontFamily": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
             "fontSize": 9
           }
         ],
         "rowHeaders": [
-          { "fontColor": { "solid": { "color": "#020B43" } }, "fontSize": 9 }
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#020B43"
+              }
+            },
+            "fontSize": 9
+          }
         ],
         "values": [
-          { "fontColor": { "solid": { "color": "#020B43" } }, "fontSize": 9 }
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#020B43"
+              }
+            },
+            "fontSize": 9
+          }
         ],
         "subTotals": [
           {
-            "fontColor": { "solid": { "color": "#020B43" } },
-            "backColor": { "solid": { "color": "#EAF3FE" } },
+            "fontColor": {
+              "solid": {
+                "color": "#020B43"
+              }
+            },
+            "backColor": {
+              "solid": {
+                "color": "#EAF3FE"
+              }
+            },
             "fontFamily": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif"
           }
         ],
         "total": [
           {
-            "fontColor": { "solid": { "color": "#FFFFFF" } },
-            "backColor": { "solid": { "color": "#020B43" } },
+            "fontColor": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "backColor": {
+              "solid": {
+                "color": "#020B43"
+              }
+            },
             "fontFamily": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif"
           }
         ],
         "grid": [
           {
             "gridHorizontal": true,
-            "gridHorizontalColor": { "solid": { "color": "#E2E8F0" } },
+            "gridHorizontalColor": {
+              "solid": {
+                "color": "#E2E8F0"
+              }
+            },
             "gridVertical": false
           }
         ]
@@ -136,17 +267,37 @@
       "*": {
         "columnHeaders": [
           {
-            "fontColor": { "solid": { "color": "#FFFFFF" } },
-            "backColor": { "solid": { "color": "#020B43" } },
+            "fontColor": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "backColor": {
+              "solid": {
+                "color": "#020B43"
+              }
+            },
             "fontFamily": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
             "fontSize": 9
           }
         ],
-        "values": [{ "fontSize": 9 }],
+        "values": [
+          {
+            "fontSize": 9
+          }
+        ],
         "total": [
           {
-            "fontColor": { "solid": { "color": "#020B43" } },
-            "backColor": { "solid": { "color": "#EAF3FE" } },
+            "fontColor": {
+              "solid": {
+                "color": "#020B43"
+              }
+            },
+            "backColor": {
+              "solid": {
+                "color": "#EAF3FE"
+              }
+            },
             "fontFamily": "'SC Prosper Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif"
           }
         ]
@@ -156,9 +307,21 @@
       "*": {
         "sentimentColors": [
           {
-            "increaseFill": { "solid": { "color": "#38D200" } },
-            "decreaseFill": { "solid": { "color": "#C23B22" } },
-            "totalFill": { "solid": { "color": "#020B43" } }
+            "increaseFill": {
+              "solid": {
+                "color": "#38D200"
+              }
+            },
+            "decreaseFill": {
+              "solid": {
+                "color": "#C23B22"
+              }
+            },
+            "totalFill": {
+              "solid": {
+                "color": "#020B43"
+              }
+            }
           }
         ]
       }
@@ -166,17 +329,41 @@
     "slicer": {
       "*": {
         "header": [
-          { "fontColor": { "solid": { "color": "#525355" } }, "textSize": 9, "fontFamily": "'SC Prosper Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif" }
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#525355"
+              }
+            },
+            "textSize": 9,
+            "fontFamily": "'SC Prosper Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif"
+          }
         ],
         "items": [
-          { "fontColor": { "solid": { "color": "#020B43" } }, "textSize": 10, "fontFamily": "'SC Prosper Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif" }
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#020B43"
+              }
+            },
+            "textSize": 10,
+            "fontFamily": "'SC Prosper Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif"
+          }
         ]
       }
     },
     "textbox": {
       "*": {
-        "background": [{ "show": false }],
-        "border": [{ "show": false }]
+        "background": [
+          {
+            "show": false
+          }
+        ],
+        "border": [
+          {
+            "show": false
+          }
+        ]
       }
     }
   }

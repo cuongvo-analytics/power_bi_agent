@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "74a8ae0562b9445488f0",
   "position": {
     "x": 496,
     "y": 102,
     "z": 4000,
-    "width": 454,
     "height": 156,
+    "width": 454,
     "tabOrder": 4000
   },
   "visual": {
@@ -46,6 +46,19 @@
             }
           }
         }
+      ],
+      "labels": [
+        {
+          "properties": {
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -71,5 +84,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "a26ccd1fe767aebf777e",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Inflows Capped"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

@@ -11,6 +11,8 @@ table 'Dim Date'
 		summarizeBy: none
 		sourceColumn: Date
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column 'Date Key'
 		dataType: int64
 		isHidden
@@ -69,6 +71,8 @@ table 'Dim Date'
 		summarizeBy: none
 		sourceColumn: Month End
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column 'Is Month End'
 		dataType: int64
 		formatString: 0
@@ -82,6 +86,8 @@ table 'Dim Date'
 		lineageTag: eaec0cba-0042-4e32-8c0f-c4b90c519bcc
 		summarizeBy: none
 		sourceColumn: Week Start
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column 'ISO Week'
 		dataType: int64
