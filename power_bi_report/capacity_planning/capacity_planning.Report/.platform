@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "capacity_planning"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "9db045ed-65ab-4d68-a224-6e2cc4869e11"
+  }
+}

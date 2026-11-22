@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "liquidity_report"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "31cb94b7-0052-4eb2-94d2-6f343175ed5a"
+  }
+}
