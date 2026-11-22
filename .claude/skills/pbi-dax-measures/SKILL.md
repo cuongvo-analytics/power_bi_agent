@@ -41,7 +41,9 @@ This skill covers the generic method. The measure libraries are in the domain sk
   | Indices (SPI, CPI) | `0.00` |
   | Hours, counts | `#,0` |
   | Days | `0` or `0.0` |
-  | Millions | `#,##0.0,,"M"` |
+  | Millions / billions | `#,##0,,.0` / `#,##0,,,.00` (unit in the visual title, e.g. "(USD bn)") |
+
+  Scaling commas must sit **immediately left of the decimal point**. Commas after the decimals (`#,##0.0,,"M"`) are not scaling: Power BI prints them as text, giving output like ",,,bnbn". Don't add quoted unit suffixes; put the unit in the title.
 
 - **DAX style:**
   - Use `VAR` / `RETURN` and `DIVIDE`.
